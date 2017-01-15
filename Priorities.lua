@@ -12,6 +12,7 @@ local function classPriorities()
 	vars.priority.spell = "Holy Shock"
 	vars.priority.unit = "player"
 	vars.priority.raidFrame = ""
+	vars.aoeCount = 0
 	
 	vars.prioritySpellIcon = {}
 	vars.prioritySpellIcon.frame = CreateFrame("Frame", "vars.prioritySpellIcon", UIParent)
@@ -113,7 +114,7 @@ local function classPriorities()
 	function memberToHeal()	
 		--/script print(CompactPartyFrame:GetChildren())
 		--/script print(CompactRaidGroup3Member3)CompactRaidGroupYMemberX
-		local groupCount, groupType, testUnitID, priorityHealth, priorityMaxHealth, priorityHealthDeficit, health, maxHealth, healthPercent
+		local groupCount, groupType, testUnitID, priorityHealth, priorityMaxHealth, priorityHealthDeficit, health, maxHealth, healthPercent, tmpInc
 		groupCount = GetNumGroupMembers()
 		if groupCount == 0 then
 			groupCount = 1
@@ -127,15 +128,31 @@ local function classPriorities()
 			groupType = "party"
 		end
 		vars.priority.healthPercent = 2
+		vars.priority.spell = ""
+		vars.priority.unit = "player"
+		vars.priority.raidFrame = nil
+		vars.aoeCount = 0
 		for i = 1, groupCount do
-			testUnitID = getActionUnitID(groupType, i)
+			testUnitID = getActionUnitID(groupType, i)			
 			health = UnitHealth(testUnitID)
 			maxHealth = UnitHealthMax(testUnitID)
-			healthPercent = health/maxHealth
+			tmpInc = UnitGetIncomingHeals(testUnitID)
+			if tmpInc == nil then
+				tmpInc = 0
+			end
+			healthInc = health + tmpInc
+			if healthInc > maxHealth then
+				healthInc = maxHealth
+			end
+			healthPercent = healthInc/maxHealth
 			if not UnitIsDeadOrGhost(testUnitID) and isCastableOn(testUnitID) then -- and isCastableOn(testUnitID)
+				if healthPercent < .9 then
+					vars.aoeCount = vars.aoeCount + 1
+				end
 				if healthPercent < vars.priority.healthPercent then
 					vars.priority.health = health
 					vars.priority.maxHealth = maxHealth
+					vars.priority.healthInc = healthInc
 					vars.priority.healthPercent = healthPercent
 					vars.priority.unitID = testUnitID
 				end
@@ -145,16 +162,23 @@ local function classPriorities()
 			testUnitID = getActionUnitID(groupType, 1)
 			health = UnitHealth(testUnitID)
 			maxHealth = UnitHealthMax(testUnitID)
-			healthPercent = health/maxHealth
+			healthInc = health + UnitGetIncomingHeals(testUnitID)
+			if healthInc > maxHealth then
+				healthInc = maxHealth
+			end
+			healthPercent = healthInc/maxHealth
 			vars.priority.health = health
 			vars.priority.maxHealth = maxHealth
+			vars.priority.healthInc = healthInc
 			vars.priority.healthPercent = healthPercent
 			vars.priority.unitID = testUnitID
 		end
 		if groupType == "party" then
 			for i = 1, 5 do
-				if _G["CompactPartyFrameMember"..i].unit == vars.priority.unitID then
+				if _G["CompactPartyFrameMember"..i] ~= nil and _G["CompactPartyFrameMember"..i].unit == vars.priority.unitID then
 					vars.priority.raidFrame = _G["CompactPartyFrameMember"..i]
+				elseif _G["CompactRaidFrame"..i] ~= nil and _G["CompactRaidFrame"..i].unit == vars.priority.unitID then
+					vars.priority.raidFrame = _G["CompactRaidFrame"..i]
 				end
 			end
 		else
@@ -167,8 +191,18 @@ local function classPriorities()
 			end
 		end
 	end
-	function healToUse()
-		if vars.priority.healthPercent == 0 then
+	function monkHealToUse()
+		if spellCD("Vivify") <= vars.timeToAct and vars.priority.healthPercent < .9 then
+			vars.priority.spell = "Vivify"
+		else
+			vars.priority.spell = ""
+		end	
+		--print(vars.priority.spell)
+	end
+	function paladinHealToUse()		
+		if spellCD("Light of Dawn") <= vars.timeToAct and vars.aoeCount > 2 then
+			vars.priority.spell = "Light of Dawn"
+		elseif vars.priority.healthPercent == 0 then
 			vars.priority.spell = ""
 		elseif spellCD("Holy Shock") <= vars.timeToAct and vars.priority.healthPercent < .9 then
 			vars.priority.spell = "Holy Shock"
@@ -184,6 +218,19 @@ local function classPriorities()
 			vars.priority.spell = ""
 		end
 	end
+	function healToUse()		
+		if UnitClass("player") == "Monk" then
+			if GetSpecialization() == 2 then
+				vars.friendlyRangeCheck = "Vivify"
+				monkHealToUse()
+			end
+		elseif UnitClass("player") == "Paladin" then
+			if GetSpecialization() == 1 then
+				vars.friendlyRangeCheck = "Flash of Light"
+				paladinHealToUse()
+			end
+		end
+	end
 	function main()
 		-- vars.raidframes are unitframes
 		-- vars.raidframes.unit is the raidID
@@ -196,14 +243,16 @@ local function classPriorities()
 		memberToHeal()	
 		
 		healToUse()
-		
-		local left, bottom, width, height = vars.priority.raidFrame:GetRect()
-		local ih = height - 20
-		vars.prioritySpellIcon.frame:SetWidth(ih)
-		vars.prioritySpellIcon.frame:SetHeight(ih)
-		vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + 10)
+		--print(vars.priority.raidFrame)
+		if vars.priority.raidFrame ~= nil then
+			local left, bottom, width, height = vars.priority.raidFrame:GetRect()
+			local ih = height - 20
+			vars.prioritySpellIcon.frame:SetWidth(ih)
+			vars.prioritySpellIcon.frame:SetHeight(ih)
+			vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + 10)
+		end
 		local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.priority.spell)
-		vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))	
+		vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
 	end
 	function e:PLAYER_LOGIN(...)
 		f:SetScript("OnUpdate", function(self, elapsed)
