@@ -174,18 +174,24 @@ local function classPriorities()
 			vars.priority.unitID = testUnitID
 		end
 		if groupType == "party" then
-			for i = 1, 5 do
-				if _G["CompactPartyFrameMember"..i] ~= nil and _G["CompactPartyFrameMember"..i].unit == vars.priority.unitID then
-					vars.priority.raidFrame = _G["CompactPartyFrameMember"..i]
-				elseif _G["CompactRaidFrame"..i] ~= nil and _G["CompactRaidFrame"..i].unit == vars.priority.unitID then
-					vars.priority.raidFrame = _G["CompactRaidFrame"..i]
+			if groupCount == 1 then
+				vars.priority.raidFrame = PlayerFrame
+			else
+				for i = 1, 5 do
+					if _G["CompactPartyFrameMember"..i] ~= nil and _G["CompactPartyFrameMember"..i].unit == vars.priority.unitID and _G["CompactPartyFrameMember"..i]:IsVisible() then
+						vars.priority.raidFrame = _G["CompactPartyFrameMember"..i]
+					elseif _G["CompactRaidFrame"..i] ~= nil and _G["CompactRaidFrame"..i].unit == vars.priority.unitID and _G["CompactRaidFrame"..i]:IsVisible() then
+						vars.priority.raidFrame = _G["CompactRaidFrame"..i]
+					end
 				end
 			end
 		else
 			for p = 1, 8 do
 				for m = 1, 5 do
-					if _G["CompactRaidGroup"..p.."Member"..m] ~= nil and _G["CompactRaidGroup"..p.."Member"..m].unit == vars.priority.unitID then
+					if _G["CompactRaidGroup"..p.."Member"..m] ~= nil and _G["CompactRaidGroup"..p.."Member"..m].unit == vars.priority.unitID and _G["CompactRaidGroup"..p.."Member"..m]:IsVisible() then
 						vars.priority.raidFrame = _G["CompactRaidGroup"..p.."Member"..m]
+					elseif _G["CompactRaidFrame"..((p-1)*5+m)] ~= nil and _G["CompactRaidFrame"..((p-1)*5+m)].unit == vars.priority.unitID and _G["CompactRaidFrame"..((p-1)*5+m)]:IsVisible() then
+						vars.priority.raidFrame = _G["CompactRaidFrame"..((p-1)*5+m)]
 					end
 				end
 			end
@@ -242,14 +248,16 @@ local function classPriorities()
 		
 		memberToHeal()	
 		
-		healToUse()
-		--print(vars.priority.raidFrame)
+		healToUse()		
 		if vars.priority.raidFrame ~= nil then
+			--print(vars.priority.raidFrame:GetName())
 			local left, bottom, width, height = vars.priority.raidFrame:GetRect()
-			local ih = height - 20
+			local ih = height*.6
 			vars.prioritySpellIcon.frame:SetWidth(ih)
 			vars.prioritySpellIcon.frame:SetHeight(ih)
-			vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + 10)
+			vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + height*.2)
+		else
+			--print(vars.priority.raidFrame)
 		end
 		local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.priority.spell)
 		vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
