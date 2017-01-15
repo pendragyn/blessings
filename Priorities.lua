@@ -1,6 +1,3 @@
--- replace UnitIsEnemy with IsSpellInRange.  UnitIsEnemy fails alot. condition IsSpellInRange ~= nil to see if its an enemy/friend.  Only replace when comparing player and another unit.
--- minimap has six zooms.  1 - 25, 2 - 40, 3 - 60, 4 - 90, 5- 120, 6 - 150
---local rc = LibStub("LibRangeCheck-2.0")
 PrioritiesDB = {}
 local function classPriorities()
 	--print(CompactPartyFrame)
