@@ -1,2 +1,0 @@
-# Priorities
-Spell/target suggestions
