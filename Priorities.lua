@@ -17,6 +17,7 @@ local function classPriorities()
 	vars.priority.unit = "player"
 	vars.priority.raidFrame = ""
 	vars.aoeCount = 0
+	vars.cds = {}
 	
 	vars.prioritySpellIcon = {}
 	vars.prioritySpellIcon.frame = CreateFrame("Frame", "vars.prioritySpellIcon", UIParent)
@@ -30,6 +31,26 @@ local function classPriorities()
 	vars.prioritySpellIcon.frame:Show()
 	vars.prioritySpellIcon.frame:SetFrameLevel(7)
 	vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
+	
+	for i = 1,10 do
+		vars.cds[i] = {}
+		vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
+		vars.cds[i].frame:SetFrameStrata("HIGH")
+		vars.cds[i].frame:SetWidth(24)
+		vars.cds[i].frame:SetHeight(24)
+		vars.cds[i].texture = vars.cds[i].frame:CreateTexture(nil,"OVERLAY ")
+		vars.cds[i].texture:SetAllPoints(vars.cds[i].frame)	
+		vars.cds[i].frame.texture = vars.cds[i].texture
+		vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
+		vars.cds[i].frame:Hide()
+		vars.cds[i].frame:SetFrameLevel(17-i)
+		vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
+		vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+		vars.cds[i].cd:SetText("")
+		vars.cds[i].cd:SetPoint("CENTER", 0,0)
+		vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
+		vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
+	end
 	local function distanceBetweenUs(unit1, unit2)
 		local result = 999
 		local y1, x1, _, instance1 = UnitPosition(unit1)
@@ -146,8 +167,8 @@ local function classPriorities()
 		-- not valid so give it a crazy cooldown.
 		if durationc == nil then
 			result = 999
-		-- check to see if its just a GCD
-		elseif durationc < 0 or count > 0 then
+		-- If the spell is on CD durationc will be the spell's CD.  otherwise it will be a GCD which is never more than 2
+		elseif durationc <= 2 or count > 0 then
 			result = 0
 		-- otherwise return when it will be off its cd
 		else
@@ -263,9 +284,10 @@ local function classPriorities()
 			vars.priority.unitID = testUnitID
 		end
 		if groupType == "party" then
-			if groupCount == 1 then
-				vars.priority.raidFrame = PlayerFrame
-			elseif CompactUnitFrameProfilesGeneralOptionsFrameKeepGroupsTogether:GetChecked() then
+			-- if groupCount == 1 then
+				-- vars.priority.raidFrame = vars.cds[1].frame
+			-- else
+			if CompactUnitFrameProfilesGeneralOptionsFrameKeepGroupsTogether:GetChecked() then
 				--In party keep groups together is CompactPartyFrameMemberM pets are CompactRaidFrameX
 				for i = 1, 5 do
 					if _G["CompactPartyFrameMember"..i] ~= nil and _G["CompactPartyFrameMember"..i].unit == vars.priority.unitID and _G["CompactPartyFrameMember"..i]:IsVisible() then
@@ -314,6 +336,8 @@ local function classPriorities()
 			vars.priority.spell = "Vivify"
 		elseif spellCD("Effuse") <= vars.timeToAct and vars.priority.healthPercent < .9 and not vars.isMoving("player") then
 			vars.priority.spell = "Effuse"
+		elseif spellCD("Tiger Palm") <= vars.timeToAct and IsSpellInRange("Tiger Palm", "target") == 1 then
+			vars.priority.spell = "Tiger Palm"
 		else
 			vars.priority.spell = ""
 		end	
@@ -362,23 +386,88 @@ local function classPriorities()
 		memberToHeal()	
 		
 		healToUse()
-		
 		if vars.priority.raidFrame ~= nil then
 			--print(vars.priority.raidFrame:GetName())
 			local left, bottom, width, height = vars.priority.raidFrame:GetRect()
 			local ih = height*.6
-			vars.prioritySpellIcon.frame:SetWidth(ih)
-			vars.prioritySpellIcon.frame:SetHeight(ih)
-			if vars.priority.raidFrame:GetName() == "PlayerFrame" then
-				vars.prioritySpellIcon.frame:SetPoint("CENTER", 0, 0)
-			else
+			-- if vars.priority.raidFrame == vars.cds[1].frame then
+				-- ih = 50
+				-- vars.prioritySpellIcon.frame:SetWidth(ih)
+				-- vars.prioritySpellIcon.frame:SetHeight(ih)
+				-- vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left-ih*2, bottom)
+			-- else
+				vars.prioritySpellIcon.frame:SetWidth(ih)
+				vars.prioritySpellIcon.frame:SetHeight(ih)
 				vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + height*.2)
-			end
+			--end
 		else
 			--print(vars.priority.raidFrame)
 		end
 		local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.priority.spell)
 		vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
+		vars.renderCDs()
+	end
+	vars.renderCDs = function()		
+		local left, bottom, width, height = CompactRaidFrameContainer:GetRect()
+		local ih = vars.prioritySpellIcon.frame:GetWidth()
+		for i = 1,10 do
+			if vars.cds[i].spellName ~= "" then
+				local cd = spellCD(vars.cds[i].spellName)
+				local float = 0
+				if cd <= 20 then
+					float = (width-50)*(1-cd/20)
+				end
+				cd = math.ceil(cd)
+				if cd > 60 then
+					cd = math.ceil(cd/60)
+				end
+				vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", math.floor(ih*.6), "THICKOUTLINE")
+				if cd == 0 then				
+					vars.cds[i].cd:SetText("")
+				else
+					vars.cds[i].cd:SetText(cd)
+				end
+				vars.cds[i].frame:SetWidth(ih)
+				vars.cds[i].frame:SetHeight(ih)
+				local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.cds[i].spellName)
+				vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
+				vars.cds[i].frame:SetPoint("BOTTOMLEFT", left + width - float, bottom + height)
+				vars.cds[i].frame:Show()
+				--if cd == 0 then
+					left = left + ih
+					width = width - ih
+				--elseif cd > 20 then
+					width = width - ih
+				--end
+			else
+				vars.cds[i].frame:Hide()
+			end
+		end
+	end
+	function buildCDs()
+		for i = 1,10 do
+			vars.cds[i].spellName = ""
+			vars.cds[i].priority = i
+			vars.cds[i].order = i
+			vars.cds[i].frame:Hide()
+		end
+		if UnitClass("player") == "Monk" then
+			if GetSpecialization() == 2 then
+				vars.cds[1].spellName = "Life Cocoon"
+				vars.cds[2].spellName = "Renewing Mist"
+				vars.cds[3].spellName = "Revival"
+				vars.cds[4].spellName = "Detox"
+				vars.cds[5].spellName = "Healing Elixir"
+				vars.cds[6].spellName = "Invoke Chi-Ji, the Red Crane"
+				vars.cds[7].spellName = "Paralysis"
+				vars.cds[8].spellName = "Rising Sun Kick"
+				vars.cds[9].spellName = "Roll"
+				vars.cds[10].spellName = "Song of Chi-Ji"
+			end
+		elseif UnitClass("player") == "Paladin" then
+			if GetSpecialization() == 1 then
+			end
+		end
 	end
 	function e:UNIT_SPELLCAST_SUCCEEDED(...)
 		local unitID, spellName, rank, lineID, spellID = ...
@@ -398,6 +487,7 @@ local function classPriorities()
 		end
 	end	
 	function e:PLAYER_LOGIN(...)
+		buildCDs()
 		f:SetScript("OnUpdate", function(self, elapsed)
 		  timer = timer + elapsed
 		  if timer >= CYCLE_TIME then
