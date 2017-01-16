@@ -32,25 +32,7 @@ local function classPriorities()
 	vars.prioritySpellIcon.frame:SetFrameLevel(7)
 	vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
 	
-	for i = 1,10 do
-		vars.cds[i] = {}
-		vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
-		vars.cds[i].frame:SetFrameStrata("HIGH")
-		vars.cds[i].frame:SetWidth(24)
-		vars.cds[i].frame:SetHeight(24)
-		vars.cds[i].texture = vars.cds[i].frame:CreateTexture(nil,"OVERLAY ")
-		vars.cds[i].texture:SetAllPoints(vars.cds[i].frame)	
-		vars.cds[i].frame.texture = vars.cds[i].texture
-		vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
-		vars.cds[i].frame:Hide()
-		vars.cds[i].frame:SetFrameLevel(17-i)
-		vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
-		vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
-		vars.cds[i].cd:SetText("")
-		vars.cds[i].cd:SetPoint("CENTER", 0,0)
-		vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
-		vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
-	end
+		
 	local function distanceBetweenUs(unit1, unit2)
 		local result = 999
 		local y1, x1, _, instance1 = UnitPosition(unit1)
@@ -410,7 +392,7 @@ local function classPriorities()
 	vars.renderCDs = function()		
 		local left, bottom, width, height = CompactRaidFrameContainer:GetRect()
 		local ih = vars.prioritySpellIcon.frame:GetWidth()
-		for i = 1,10 do
+		for i = 1,#vars.cds do
 			if vars.cds[i].spellName ~= "" then
 				local cd = spellCD(vars.cds[i].spellName)
 				local float = 0
@@ -444,28 +426,55 @@ local function classPriorities()
 			end
 		end
 	end
+	function parseSpellCDs(cds)
+		local name, rank, icon, castingTime, minRange, maxRange, spellID
+		for i = 1, #cds do		
+			if vars.cds[i] == nil then
+				vars.cds[i] = {}
+				vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
+				vars.cds[i].frame:SetFrameStrata("HIGH")
+				vars.cds[i].frame:SetWidth(24)
+				vars.cds[i].frame:SetHeight(24)
+				vars.cds[i].texture = vars.cds[i].frame:CreateTexture(nil,"OVERLAY ")
+				vars.cds[i].texture:SetAllPoints(vars.cds[i].frame)	
+				vars.cds[i].frame.texture = vars.cds[i].texture
+				vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
+				vars.cds[i].frame:Hide()
+				vars.cds[i].frame:SetFrameLevel(17-i)
+				vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
+				vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+				vars.cds[i].cd:SetText("")
+				vars.cds[i].cd:SetPoint("CENTER", 0,0)
+				vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
+				vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
+				vars.cds[i].frame.spellID = 0
+				vars.cds[i].frame:SetScript("OnEnter", function(self, motion)
+								GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+								GameTooltip:SetSpellByID(self.spellID)
+								GameTooltip:Show()
+							end)			
+				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
+					GameTooltip:Hide()
+				end)
+			end
+			vars.cds[i].spellName = cds[i]
+			name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(cds[i])
+			vars.cds[i].frame.spellID = spellID
+		end
+	end
 	function buildCDs()
-		for i = 1,10 do
+		for i = 1,#vars.cds do
 			vars.cds[i].spellName = ""
-			vars.cds[i].priority = i
-			vars.cds[i].order = i
+			vars.cds[i].frame.spellID = 0
 			vars.cds[i].frame:Hide()
 		end
 		if UnitClass("player") == "Monk" then
 			if GetSpecialization() == 2 then
-				vars.cds[1].spellName = "Life Cocoon"
-				vars.cds[2].spellName = "Renewing Mist"
-				vars.cds[3].spellName = "Revival"
-				vars.cds[4].spellName = "Detox"
-				vars.cds[5].spellName = "Healing Elixir"
-				vars.cds[6].spellName = "Invoke Chi-Ji, the Red Crane"
-				vars.cds[7].spellName = "Paralysis"
-				vars.cds[8].spellName = "Rising Sun Kick"
-				vars.cds[9].spellName = "Roll"
-				vars.cds[10].spellName = "Song of Chi-Ji"
+				parseSpellCDs({"Life Cocoon","Renewing Mist","Revival","Detox","Healing Elixir","Invoke Chi-Ji, the Red Crane","Paralysis","Rising Sun Kick","Roll","Song of Chi-Ji"})
 			end
 		elseif UnitClass("player") == "Paladin" then
 			if GetSpecialization() == 1 then
+				parseSpellCDs({"Holy Shock","Light of Dawn","Cleanse","Avenging Wrath"})
 			end
 		end
 	end
