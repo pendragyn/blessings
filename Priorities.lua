@@ -1,6 +1,5 @@
 PrioritiesDB = {}
 local function classPriorities()
-	--print(CompactPartyFrame)
 	local self = {}
 	local f, e = CreateFrame("Frame"), {}
 	local vars = {}
@@ -16,9 +15,60 @@ local function classPriorities()
 	vars.priority.spell = "Holy Shock"
 	vars.priority.unit = "player"
 	vars.priority.raidFrame = ""
-	vars.aoeCount = 0
+	vars.aoeCount1 = 0
 	vars.cds = {}
 	
+	vars.buildLines = function(args)
+		args.var = args.frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+		args.var:SetText(args.text)
+		args.var:SetPoint("TOPLEFT", args.left,args.top)
+		args.var:SetTextColor(1.0,1.0,1.0,0.8)
+		args.var:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE")
+	end
+	
+	vars.buildFrames = function(args)
+		args.var.frame = CreateFrame("Frame", tostring(args.var)..".frame", UIParent)
+		args.var.frame:SetFrameStrata("HIGH")
+		args.var.frame:SetWidth(args.width)
+		args.var.frame:SetHeight(args.height)
+		args.var.texture = args.var.frame:CreateTexture(nil,"OVERLAY ")
+		args.var.texture:SetAllPoints(args.var.frame)	
+		args.var.frame.texture = args.var.texture
+		args.var.frame:SetPoint("CENTER", 0, 100)
+		args.var.frame:Hide()
+		args.var.frame:SetFrameLevel(7)
+		args.var.texture:SetColorTexture(0,0,0,1)		
+		
+		args.var.closeButton = CreateFrame("Button", nil, args.var.frame, "UIPanelButtonTemplate")
+		args.var.closeButton.parent = args.var.frame
+		args.var.closeButton:SetPoint("TOPLEFT", 980, 0)
+		args.var.closeButton:SetWidth(20)
+		args.var.closeButton:SetHeight(20) 
+		args.var.closeButton:SetText("X")
+		args.var.closeButton:SetScript("OnClick", function(self, button, down)
+			self.parent:Hide()
+		end)
+	end	
+	vars.buildFields = function(args)
+		-- create args.var outside and pass it to the function to make it referenceable later
+		args.var:SetPoint("TOPLEFT", args.left, args.top)
+		args.var:SetWidth(args.width) 
+		args.var:SetHeight(13) 
+		args.var:SetAlpha(1.0)
+		args.var:SetNumber(args.defaultval)
+		args.var:EnableKeyboard(false)
+		args.var.step = args.step
+		args.var.minval = args.minval
+		args.var.maxval = args.maxval
+		args.var:SetScript("OnMouseWheel", function(self, delta)
+			self:SetText(math.floor(self:GetNumber()+delta*self.step))
+			if self:GetNumber() > self.maxval then
+				self:SetText(self.maxval)
+			elseif self:GetNumber() < self.minval then
+				self:SetText(self.minval)
+			end
+		end)
+	end
 	vars.prioritySpellIcon = {}
 	vars.prioritySpellIcon.frame = CreateFrame("Frame", "vars.prioritySpellIcon", UIParent)
 	vars.prioritySpellIcon.frame:SetFrameStrata("HIGH")
@@ -31,8 +81,109 @@ local function classPriorities()
 	vars.prioritySpellIcon.frame:Show()
 	vars.prioritySpellIcon.frame:SetFrameLevel(7)
 	vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
-	
 		
+	vars.options = {}
+	
+	--monk options
+	vars.options.Monk = {}
+	--monk mistweaver options
+	vars.options.Monk[2] = {}
+	vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 500})
+	
+	vars.options.Monk[2].lines = {}
+	-- Cocoon
+	vars.options.Monk[2].lines[1] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[1].text1, frame = vars.options.Monk[2].frame, text = "Life Cocoon if priority unit's health is below", left = 10, top = -30})
+	
+	vars.options.Monk[2].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[1].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[1].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 25, top = -30, left = 350})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[1].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 380, top = -30})
+	--essence font
+	vars.options.Monk[2].lines[2] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[2].text1, frame = vars.options.Monk[2].frame, text = "Essence Font if at least", left = 10, top = -50})	
+	
+	vars.options.Monk[2].lines[2].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoeCount", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[2].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 5, top = -50, left = 190})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[2].text2, frame = vars.options.Monk[2].frame, text = "raid members are within range and below", left = 215, top = -50})
+		
+	vars.options.Monk[2].lines[2].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[2].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -50, left = 525})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[2].text3, frame = vars.options.Monk[2].frame, text = "% health and no more than", left = 560, top = -50})	
+	
+	vars.options.Monk[2].lines[2].buffCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].buffCount", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[2].buffCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 2, top = -50, left = 770})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "raid members", left = 800, top = -70})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "have the Essence font buff and I'm not moving.", left = 560, top = -70})
+	
+	--renewing mist
+	vars.options.Monk[2].lines[3] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Renewing Mist if priority unit doesn't have the renewing mist buff and their health is below", left = 10, top = -90})
+	
+	vars.options.Monk[2].lines[3].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[3].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[3].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -90, left = 700})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[3].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 735, top = -90})
+	--Enveloping Mist
+	vars.options.Monk[2].lines[4] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Enveloption Mist if priority unit doesn't have the enveloping mist buff and their health is below", left = 10, top = -110})
+	
+	vars.options.Monk[2].lines[4].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[4].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[4].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -110, left = 730})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[4].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving or", left = 765, top = -110})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[4].text3, frame = vars.options.Monk[2].frame, text = "you have the thunder focus tea buff.", left = 560, top = -130})
+	
+	--vivify
+	vars.options.Monk[2].lines[5] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[5].text1, frame = vars.options.Monk[2].frame, text = "Vivify if priority unit's health is below", left = 10, top = -150})
+	
+	vars.options.Monk[2].lines[5].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[5].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 70, top = -150, left = 300})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[5].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving and there are at least ", left = 335, top = -150})
+	
+	vars.options.Monk[2].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[5].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 2, top = -150, left = 700})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[5].text3, frame = vars.options.Monk[2].frame, text = "other raid member below ", left = 725, top = -150})
+	
+	vars.options.Monk[2].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[5].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -150, left = 915})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[5].text4, frame = vars.options.Monk[2].frame, text = "%", left = 950, top = -150})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[5].text5, frame = vars.options.Monk[2].frame, text = "health or I have the uplifting trance buff.", left = 560, top = -170})
+	
+	--Effuse	
+		-- elseif spellCD("Effuse") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[6].healthPerc:GetNumber()/100 and not vars.isMoving("player") then
+	vars.options.Monk[2].lines[6] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[6].text1, frame = vars.options.Monk[2].frame, text = "Effuse if priority unit's health is below", left = 10, top = -190})
+	
+	vars.options.Monk[2].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[6].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+	vars.buildFields({var = vars.options.Monk[2].lines[6].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -190, left = 310})
+	
+	vars.buildLines({var = vars.options.Monk[2].lines[6].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 345, top = -190})	
+	
+	vars.options.Monk[2].lines[7] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[7].text1, frame = vars.options.Monk[2].frame, text = "When in melee range Tiger Palm until you have three stacks of Teachings of the Monastery.", left = 10, top = -210})	
+	
+	vars.options.Monk[2].lines[8] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[8].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Rising Sun Kick.", left = 10, top = -230})	
+	
+	vars.options.Monk[2].lines[9] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Blackout Kick.", left = 10, top = -250})
+	
+	vars.options.Monk[2].lines[9] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in range of your target Crackling Jade Lightning.", left = 10, top = -270})
+	
+	vars.options.Monk[2].lines[10] = {}
+	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -10})
 	local function distanceBetweenUs(unit1, unit2)
 		local result = 999
 		local y1, x1, _, instance1 = UnitPosition(unit1)
@@ -161,6 +312,16 @@ local function classPriorities()
 		end
 		return result
 	end	
+	
+	local spellCharges = function(spellName)
+		local result = 0
+		local count = GetSpellCharges(spellName)
+		if count == nil then
+			count = 0
+		end
+		result = count
+		return result
+	end	
 	local function auraDuration(unitID, aura, filter)
 		local expiresIn
 		local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitAura(unitID,aura,nil,filter)
@@ -173,6 +334,33 @@ local function classPriorities()
 			expiresIn = expires - vars.timeSnap
 		end
 		result = expiresIn	
+		return result
+	end
+	
+	local buffCount = function(unitName,aura)
+		--print(unitName,aura)
+		local result = false
+		local expiresIn = 0
+		local f = fluff
+		if f == nil then
+			f = 2
+		end
+		--UnitAura doesnt work.
+		local name, rank, icon, count, dispelType, duration, expires, caster, isStealable = UnitBuff(unitName, aura)
+		if expires == nil then
+			expiresIn = -1
+		elseif expires == 0 then
+			expiresIn = 999999
+		else
+			expiresIn = expires - vars.timeSnap
+		end
+		--print(expiresIn)
+		if expiresIn <=f then	
+			result = 0
+		else
+			result = count
+		end
+		--print(result)
 		return result
 	end
 	vars.talentChosen = function(row,col,unit)
@@ -196,7 +384,7 @@ local function classPriorities()
 		end		
 	end
 	function memberToHeal()	
-		local groupCount, groupType, testUnitID, priorityHealth, priorityMaxHealth, priorityHealthDeficit, health, maxHealth, healthPercent, tmpInc
+		local groupCount, groupType, testUnitID, priorityHealth, priorityMaxHealth, priorityHealthDeficit, health, maxHealth, healthPercentInc, tmpInc, missingHealthInc
 		groupCount = GetNumGroupMembers()
 		if groupCount == 0 then
 			groupCount = 1
@@ -209,11 +397,13 @@ local function classPriorities()
 		else
 			groupType = "party"
 		end
-		vars.priority.healthPercent = 2
+		vars.priority.healthPercentInc = 2
 		vars.priority.spell = ""
 		vars.priority.unit = ""
 		vars.priority.raidFrame = nil
-		vars.aoeCount = 0
+		vars.aoeCount1 = 0
+		vars.aoeCount2 = 0
+		vars.aoeCount3 = 0
 		for i = 1, groupCount do
 			testUnitID = getActionUnitID(groupType, i)
 			if not UnitIsDeadOrGhost(testUnitID) and isCastableOn(testUnitID) then -- and isCastableOn(testUnitID)			
@@ -227,30 +417,39 @@ local function classPriorities()
 				if healthInc > maxHealth then
 					healthInc = maxHealth
 				end
-				healthPercent = healthInc/maxHealth
-				
+				healthPercentInc = healthInc/maxHealth
+				missingHealthInc = maxHealth - healthInc
+				if missingHealthInc < 0 then
+					missingHealthInc = 0
+				end				
 				-- class specific stuff
 				if UnitClass("player") == "Monk" and distanceBetweenUs("player", testUnitID) <= 25 then
-					if healthPercent < .9 then
-						vars.aoeCount = vars.aoeCount + 1
+					if healthPercentInc < vars.options.Monk[2].lines[2].aoePercent:GetNumber()/100 then
+						vars.aoeCount1 = vars.aoeCount1 + 1
 					end
+					if auraDuration(testUnitID,"Essence Font","HELPFUL|PLAYER") >= vars.timeToAct then
+						vars.aoeCount2 = vars.aoeCount2 + 1
+					end
+					if healthPercentInc < vars.options.Monk[2].lines[5].aoePercent:GetNumber()/100 then
+						vars.aoeCount3 = vars.aoeCount3 + 1
+					end					
 				elseif UnitClass("player") == "Paladin" and distanceBetweenUs("player", testUnitID) <= 15 then
-					if healthPercent < .9 then
-						vars.aoeCount = vars.aoeCount + 1
+					if healthPercentInc < .9 then
+						vars.aoeCount1 = vars.aoeCount1 + 1
 					end
 				end
 				
-				if healthPercent < vars.priority.healthPercent then
+				if healthPercentInc < vars.priority.healthPercentInc then
 					vars.priority.health = health
 					vars.priority.maxHealth = maxHealth
 					vars.priority.healthInc = healthInc
-					vars.priority.healthPercent = healthPercent
+					vars.priority.healthPercentInc = healthPercentInc
 					vars.priority.unitID = testUnitID
 				end
 				--
 			end
 		end
-		if vars.priority.healthPercent == 2 then
+		if vars.priority.healthPercentInc == 2 then
 			testUnitID = getActionUnitID(groupType, 1)
 			health = UnitHealth(testUnitID)
 			maxHealth = UnitHealthMax(testUnitID)
@@ -258,11 +457,12 @@ local function classPriorities()
 			if healthInc > maxHealth then
 				healthInc = maxHealth
 			end
-			healthPercent = healthInc/maxHealth
+			healthPercentInc = healthInc/maxHealth
 			vars.priority.health = health
 			vars.priority.maxHealth = maxHealth
 			vars.priority.healthInc = healthInc
-			vars.priority.healthPercent = healthPercent
+			vars.priority.healthPercentInc = healthPercentInc
+			vars.priority.missingHealthInc = missingHealthInc
 			vars.priority.unitID = testUnitID
 		end
 		if groupType == "party" then
@@ -305,33 +505,55 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
+		--shellun's gift
 		--print(math.floor(vars.priority.healthPercent*100))
-		if spellCD("Essence Font") <= vars.timeToAct and vars.talentChosen(1,1,"player") and vars.aoeCount > 4 and not vars.isMoving("player") then
-			vars.priority.spell = "Essence Font"
-		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercent < .5 then
+		--life cocoon
+		--essence font 5 or more at 80% health or below and not thunder focus tea buff
+		--renewing mist at 90% and not has renewing mist buff
+		--enveloping mist at 90% if doesnt have enveloping mist buff without moving or moving with thunder focus tea
+		--vivify with proc called "Uplifting Trance" 1 target without buff 3 targets 90%
+		--effuse at 90%
+		-- dps spells
+		--melee
+		--tiger palm Teachings of the Monastery x3
+		--rising sun kick
+		--black out kick
+		--range
+		--crackling jade lightning
+		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCharges("Sheilun's Gift") > 3 and spellCharges("Sheilun's Gift")*100000 < vars.priority.missingHealthInc then
+			vars.priority.spell = "Sheilun's Gift"
+		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
-		elseif spellCD("Renewing Mist") <= vars.timeToAct and vars.spellCasting ~= "Renewing Mist" and auraDuration(vars.priority.unitID,"Renewing Mist","HELPFUL") < 2 and vars.priority.healthPercent < .9 then
+		elseif spellCD("Essence Font") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Monk[2].lines[2].aoeCount:GetNumber() and not vars.isMoving("player") and auraDuration("player","Thunder Focus Tea","HELPFUL") == 0 and vars.aoeCount2 <= vars.options.Monk[2].lines[2].buffCount:GetNumber() then
+			vars.priority.spell = "Essence Font"
+		elseif spellCD("Renewing Mist") <= vars.timeToAct and vars.spellCasting ~= "Renewing Mist" and auraDuration(vars.priority.unitID,"Renewing Mist","HELPFUL") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[3].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Renewing Mist"
-		elseif spellCD("Enveloping Mist") <= vars.timeToAct and vars.spellCasting ~= "Enveloping Mist" and auraDuration(vars.priority.unitID,"Enveloping Mist","HELPFUL") < 2 and vars.priority.healthPercent < .9 and not vars.isMoving("player") then
+		elseif spellCD("Enveloping Mist") <= vars.timeToAct and vars.spellCasting ~= "Enveloping Mist" and auraDuration(vars.priority.unitID,"Enveloping Mist","HELPFUL") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[4].healthPerc:GetNumber()/100 and (not vars.isMoving("player") or auraDuration("player","Thunder Focus Tea","HELPFUL") > 0) then
 			vars.priority.spell = "Enveloping Mist"
-		elseif spellCD("Vivify") <= vars.timeToAct and vars.priority.healthPercent < .7 and not vars.isMoving("player") then
+		elseif spellCD("Vivify") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[5].healthPerc:GetNumber()/100 and not vars.isMoving("player") and (vars.aoeCount3 >= vars.options.Monk[2].lines[5].aoeCount:GetNumber() or (auraDuration("player","Uplifting Trance","HELPFUL") >= vars.timeToAct and vars.spellCasting ~= "Vivify")) then
 			vars.priority.spell = "Vivify"
-		elseif spellCD("Effuse") <= vars.timeToAct and vars.priority.healthPercent < .9 and not vars.isMoving("player") then
+		elseif spellCD("Effuse") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[6].healthPerc:GetNumber()/100 and not vars.isMoving("player") then
 			vars.priority.spell = "Effuse"
-		elseif spellCD("Tiger Palm") <= vars.timeToAct and IsSpellInRange("Tiger Palm", "target") == 1 then
+		elseif spellCD("Tiger Palm") <= vars.timeToAct and IsSpellInRange("Tiger Palm", "target") == 1 and buffCount("player", "Teachings of the Monastery") < 3 then
 			vars.priority.spell = "Tiger Palm"
+		elseif spellCD("Rising Sun Kick") <= vars.timeToAct and IsSpellInRange("Rising Sun Kick", "target") == 1 then
+			vars.priority.spell = "Rising Sun Kick"
+		elseif spellCD("Blackout Kick") <= vars.timeToAct and IsSpellInRange("Blackout Kick", "target") == 1 then
+			vars.priority.spell = "Blackout Kick"
+		elseif spellCD("Crackling Jade Lightning") <= vars.timeToAct and IsSpellInRange("Crackling Jade Lightning", "target") == 1 then
+			vars.priority.spell = "Crackling Jade Lightning"
 		else
 			vars.priority.spell = ""
 		end	
 	end
 	function paladinHealToUse()		
-		if spellCD("Light of Dawn") <= vars.timeToAct and vars.aoeCount > 2 then
+		if spellCD("Light of Dawn") <= vars.timeToAct and vars.aoeCount1 >= 2 then
 			vars.priority.spell = "Light of Dawn"
-		elseif vars.priority.healthPercent == 0 then
+		elseif vars.priority.healthPercentInc == 0 then
 			vars.priority.spell = ""
-		elseif spellCD("Holy Shock") <= vars.timeToAct and IsSpellInRange("Holy Shock", vars.priority.unitID) == 1 and vars.priority.healthPercent < .9 then
+		elseif spellCD("Holy Shock") <= vars.timeToAct and IsSpellInRange("Holy Shock", vars.priority.unitID) == 1 and vars.priority.healthPercentInc < .9 then
 			vars.priority.spell = "Holy Shock"
-		elseif spellCD("Flash of Light") <= vars.timeToAct and vars.priority.healthPercent < .9 and not vars.isMoving("player") then
+		elseif spellCD("Flash of Light") <= vars.timeToAct and vars.priority.healthPercentInc < .9 and not vars.isMoving("player") then
 			vars.priority.spell = "Flash of Light"
 		elseif spellCD("Judgment") <= vars.timeToAct and IsSpellInRange("Judgment", "target") == 1 then
 			vars.priority.spell = "Judgment"
@@ -395,6 +617,7 @@ local function classPriorities()
 		for i = 1,#vars.cds do
 			if vars.cds[i].spellName ~= "" then
 				local cd = spellCD(vars.cds[i].spellName)
+				local charges = spellCharges(vars.cds[i].spellName)
 				local float = 0
 				if cd <= 20 then
 					float = (width-50)*(1-cd/20)
@@ -408,6 +631,11 @@ local function classPriorities()
 					vars.cds[i].cd:SetText("")
 				else
 					vars.cds[i].cd:SetText(cd)
+				end
+				if charges < 2 then				
+					vars.cds[i].charges:SetText("")
+				else
+					vars.cds[i].charges:SetText(charges)
 				end
 				vars.cds[i].frame:SetWidth(ih)
 				vars.cds[i].frame:SetHeight(ih)
@@ -428,7 +656,20 @@ local function classPriorities()
 	end
 	function parseSpellCDs(cds)
 		local name, rank, icon, castingTime, minRange, maxRange, spellID
-		for i = 1, #cds do		
+		for i = 1, #cds do			
+			if string.sub(cds[i], 1, 11) == "Talent Row " then
+				local row = string.sub(cds[i], 12, 12)
+				for h = 1,3 do
+					local talentID, name, texture, selected, available, spellID, tier, row, column = GetTalentInfo(row, h, 1)
+					if selected then
+						if GetSpellInfo(name) == nil then
+							cds[i] = ""
+						else
+							cds[i] = name
+						end
+					end
+				end
+			end
 			if vars.cds[i] == nil then
 				vars.cds[i] = {}
 				vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
@@ -440,13 +681,18 @@ local function classPriorities()
 				vars.cds[i].frame.texture = vars.cds[i].texture
 				vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
 				vars.cds[i].frame:Hide()
-				vars.cds[i].frame:SetFrameLevel(17-i)
+				vars.cds[i].frame:SetFrameLevel(30-i)
 				vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
 				vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
 				vars.cds[i].cd:SetText("")
 				vars.cds[i].cd:SetPoint("CENTER", 0,0)
 				vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
 				vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
+				vars.cds[i].charges = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+				vars.cds[i].charges:SetText("")
+				vars.cds[i].charges:SetPoint("BOTTOMRIGHT", 0,2)
+				vars.cds[i].charges:SetTextColor(1.0,1.0,1.0,0.8)
+				vars.cds[i].charges:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE")
 				vars.cds[i].frame.spellID = 0
 				vars.cds[i].frame:SetScript("OnEnter", function(self, motion)
 								GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -455,6 +701,24 @@ local function classPriorities()
 							end)			
 				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
 					GameTooltip:Hide()
+				end)			
+				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
+					GameTooltip:Hide()
+				end)			
+				vars.cds[i].frame:SetScript("OnMouseDown", function(self, button)
+					if button == "RightButton" then
+						local c = UnitClass("player")
+						local s = GetSpecialization()
+						if vars.options[c] ~= nil then
+							if vars.options[c][s] ~= nil then
+								if vars.options[c][s].frame:IsShown() then
+									vars.options[c][s].frame:Hide()
+								else
+									vars.options[c][s].frame:Show()
+								end
+							end
+						end
+					end
 				end)
 			end
 			vars.cds[i].spellName = cds[i]
@@ -470,11 +734,11 @@ local function classPriorities()
 		end
 		if UnitClass("player") == "Monk" then
 			if GetSpecialization() == 2 then
-				parseSpellCDs({"Life Cocoon","Renewing Mist","Revival","Detox","Healing Elixir","Invoke Chi-Ji, the Red Crane","Paralysis","Rising Sun Kick","Roll","Song of Chi-Ji"})
+				parseSpellCDs({"Sheilun's Gift","Renewing Mist","Thunder Focus Tea","Detox","Life Cocoon","Revival","Talent Row 7","Talent Row 6","Talent Row 5","Talent Row 4","Talent Row 1"}) --
 			end
 		elseif UnitClass("player") == "Paladin" then
 			if GetSpecialization() == 1 then
-				parseSpellCDs({"Holy Shock","Light of Dawn","Cleanse","Avenging Wrath"})
+				parseSpellCDs({"Holy Shock","Light of Dawn","Judgment","Crusader Strike","Cleanse"})--,"Judgment","Consecration","Cleanse","Divine Protection","Hammer of Justice","Avenging Wrath","Every Man for Himself","Divine Shield","Aura Mastery","Blessing of Freedom", "Blessing of Sacrifice", "Blessing of Protection","Divine Steed","Lay on Hands","Talent Row 1","Talent Row 2","Talent Row 3","Talent Row 5","Talent Row 7"})
 			end
 		end
 	end
@@ -488,13 +752,16 @@ local function classPriorities()
 			vars.spellTarget = vars.priority.unitID
 		end
 	end	
-	function e:UNIT_SPELLCAST_END(...)
+	function e:UNIT_SPELLCAST_STOP(...)
 		local unitID, spellName, rank, lineID, spellID = ...
 		if UnitIsUnit(unitID,"player") then
 			vars.spellCasting = ""
 			vars.spellTarget = ""
 		end
 	end	
+	function e:PLAYER_TALENT_UPDATE(...)
+	    buildCDs()
+	end
 	function e:PLAYER_LOGIN(...)
 		buildCDs()
 		f:SetScript("OnUpdate", function(self, elapsed)
