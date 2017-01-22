@@ -16,6 +16,7 @@ local function classPriorities()
 	vars.priority.unit = "player"
 	vars.priority.raidFrame = ""
 	vars.aoeCount1 = 0
+	vars.playerMaxHealth = UnitHealthMax("player")
 	vars.cds = {}
 	
 	vars.buildLines = function(args)
@@ -72,6 +73,42 @@ local function classPriorities()
 			self.savetable[self.savevar] = self:GetNumber()
 		end)
 	end
+	vars.buildCDfield = function(args)
+		local cdstring = ""
+		for i = 1,#args.defaultval do
+			cdstring = cdstring .. args.defaultval[i].."|"
+		end
+		-- create args.var outside and pass it to the function to make it referenceable later
+		args.var:SetPoint("TOPLEFT", args.left, args.top)
+		args.var:SetWidth(args.width) 
+		args.var:SetHeight(args.height) 
+		args.var:SetAlpha(1.0)
+		args.var:SetText(cdstring)
+		args.var:EnableKeyboard(true)
+		args.var.step = args.step
+		args.var.minval = args.minval
+		args.var.maxval = args.maxval
+		args.var.savetable = args.savetable
+		args.var.savevar = args.savevar
+		args.var:SetScript("OnEditFocusLost", function(self)
+			local i = 1
+			local vi = 1
+			local v = self:GetText()
+			local spell = ""
+			self.savetable[self.savevar] = {}
+			for i = 1,string.len(v) do
+				c = string.sub(v, i, i)
+				if c == "|" then
+					self.savetable[self.savevar][vi] = spell
+					spell = ""
+					vi = vi + 1
+				else
+					spell = spell .. c
+				end
+			end
+			parseSpellCDs(self.savetable[self.savevar])
+		end)
+	end
 	vars.prioritySpellIcon = {}
 	vars.prioritySpellIcon.frame = CreateFrame("Frame", "vars.prioritySpellIcon", UIParent)
 	vars.prioritySpellIcon.frame:SetFrameStrata("HIGH")
@@ -105,7 +142,7 @@ local function classPriorities()
 			end			
 			--monk mistweaver options
 			vars.options.Monk[2] = {}
-			vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 300})
+			vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 400})
 			
 			if PrioritiesDB.Monk[2].lines == nil then
 				PrioritiesDB.Monk[2].lines = {}				
@@ -253,6 +290,58 @@ local function classPriorities()
 			
 			vars.options.Monk[2].lines[10] = {}
 			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -10})
+			
+			--CDs
+			vars.options.Monk[2].lines[11] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[11].text1, frame = vars.options.Monk[2].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -290})			
+								
+			vars.options.Monk[2].CDS = CreateFrame("EditBox", "vars.options.Monk[2].CDS", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildCDfield({var = vars.options.Monk[2].CDS, frame = vars.options.Monk[2].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Monk[2].CDS, top = -310, left = 10, savetable = PrioritiesDB.Monk[2], savevar = "CDS"})
+		end
+	end
+	
+	vars.buildOptions.Paladin = {}
+	vars.buildOptions.Paladin[1] = function()
+		if vars.options.Paladin == nil then
+			--monk options
+			vars.options.Paladin = {}
+		end
+		if PrioritiesDB.Paladin == nil then
+			PrioritiesDB.Paladin = {}				
+		end			
+		if vars.options.Paladin[1] == nil then			
+			if PrioritiesDB.Paladin[1] == nil then
+				PrioritiesDB.Paladin[1] = {}				
+			end			
+			--monk mistweaver options
+			vars.options.Paladin[1] = {}
+			vars.buildFrames({var = vars.options.Paladin[1], width = 1000, height = 300})
+			
+			if PrioritiesDB.Paladin[1].lines == nil then
+				PrioritiesDB.Paladin[1].lines = {}				
+			end			
+			vars.options.Paladin[1].lines = {}
+			-- Holy Shock
+			if PrioritiesDB.Paladin[1].lines[1] == nil then
+				PrioritiesDB.Paladin[1].lines[1] = {}				
+			end			
+			vars.options.Paladin[1].lines[1] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock if priority unit's health is below", left = 10, top = -30})
+			
+			if PrioritiesDB.Paladin[1].lines[1].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[1].healthPerc = 25				
+			end						
+			vars.options.Paladin[1].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[1].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[1].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[1].healthPerc, top = -30, left = 350, savetable = PrioritiesDB.Paladin[1].lines[1], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -30})	
+			
+			--CDs	
+			vars.options.Paladin[1].lines[2] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[2].text1, frame = vars.options.Paladin[1].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -80})			
+								
+			vars.options.Paladin[1].CDS = CreateFrame("EditBox", "vars.options.Paladin[1].CDS", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -100, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
 		end
 	end
 	local function distanceBetweenUs(unit1, unit2)
@@ -591,7 +680,7 @@ local function classPriorities()
 		--black out kick
 		--range
 		--crackling jade lightning
-		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCharges("Sheilun's Gift") > 3 and spellCharges("Sheilun's Gift")*100000 < vars.priority.missingHealthInc then
+		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCharges("Sheilun's Gift") > 3 and spellCharges("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
 			vars.priority.spell = "Sheilun's Gift"
 		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
@@ -657,6 +746,8 @@ local function classPriorities()
 		else
 			vars.timeToAct = GCDtimeLeft()
 		end
+		
+		vars.playerMaxHealth = UnitHealthMax("player")
 		
 		memberToHeal()	
 		
@@ -726,17 +817,18 @@ local function classPriorities()
 		end
 	end
 	function parseSpellCDs(cds)
-		local name, rank, icon, castingTime, minRange, maxRange, spellID
-		for i = 1, #cds do			
-			if string.sub(cds[i], 1, 11) == "Talent Row " then
-				local row = string.sub(cds[i], 12, 12)
+		local name, rank, icon, castingTime, minRange, maxRange, spellID, tmpSpellName
+		for i = 1, #cds do
+			tmpSpellName = cds[i]
+			if string.sub(tmpSpellName, 1, 11) == "Talent Row " then
+				local row = string.sub(tmpSpellName, 12, 12)
 				for h = 1,3 do
 					local talentID, name, texture, selected, available, spellID, tier, row, column = GetTalentInfo(row, h, 1)
 					if selected then
 						if GetSpellInfo(name) == nil then
-							cds[i] = ""
+							tmpSpellName = ""
 						else
-							cds[i] = name
+							tmpSpellName = name
 						end
 					end
 				end
@@ -792,10 +884,31 @@ local function classPriorities()
 					end
 				end)
 			end
-			vars.cds[i].spellName = cds[i]
-			name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(cds[i])
+			vars.cds[i].spellName = tmpSpellName
+			name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(tmpSpellName)
 			vars.cds[i].frame.spellID = spellID
+		end		
+		for i = #cds + 1, #vars.cds do
+			vars.cds[i].spellName = ""
+			vars.cds[i].frame.spellID = 0
 		end
+	end
+	function setupSpec()
+		vars.class = UnitClass("player")
+		vars.spec = GetSpecialization()
+		if vars.buildOptions[vars.class] == nil then
+			vars.buildOptions[vars.class] = {}
+		end
+		if vars.buildOptions[vars.class][vars.spec] ~= nil then
+			vars.buildOptions[vars.class][vars.spec]()
+		end
+		if PrioritiesDB[vars.class] == nil then
+			PrioritiesDB[vars.class] = {}				
+		end			
+		if PrioritiesDB[vars.class][vars.spec] == nil then
+			PrioritiesDB[vars.class][vars.spec] = {}
+		end
+		buildCDs()
 	end
 	function buildCDs()
 		for i = 1,#vars.cds do
@@ -803,17 +916,20 @@ local function classPriorities()
 			vars.cds[i].frame.spellID = 0
 			vars.cds[i].frame:Hide()
 		end
-		if UnitClass("player") == "Monk" then
-			if GetSpecialization() == 2 then
-				vars.buildOptions[UnitClass("player")][GetSpecialization()]()
-				parseSpellCDs({"Sheilun's Gift","Renewing Mist","Thunder Focus Tea","Detox","Life Cocoon","Revival","Talent Row 7","Talent Row 6","Talent Row 5","Talent Row 4","Talent Row 1"}) --
+		if PrioritiesDB[vars.class][vars.spec].CDS == nil then
+			if vars.class == "Monk" then
+				if vars.spec == 2 then
+					PrioritiesDB[vars.class][vars.spec].CDS = {"Sheilun's Gift","Renewing Mist","Thunder Focus Tea","Detox","Life Cocoon","Revival","Talent Row 7","Talent Row 6","Talent Row 5","Talent Row 4","Talent Row 1"} --
+				end
+			elseif vars.class == "Paladin" then
+				if vars.spec == 1 then
+					PrioritiesDB[vars.class][vars.spec].CDS = {"Holy Shock","Light of Dawn","Judgment","Crusader Strike","Cleanse"}--,"Judgment","Consecration","Cleanse","Divine Protection","Hammer of Justice","Avenging Wrath","Every Man for Himself","Divine Shield","Aura Mastery","Blessing of Freedom", "Blessing of Sacrifice", "Blessing of Protection","Divine Steed","Lay on Hands","Talent Row 1","Talent Row 2","Talent Row 3","Talent Row 5","Talent Row 7"})
+				end
+			else
+				PrioritiesDB[vars.class][vars.spec].CDS = {}
 			end
-		elseif UnitClass("player") == "Paladin" then
-			if GetSpecialization() == 1 then
-				vars.buildOptions[UnitClass("player")][GetSpecialization()]()
-				parseSpellCDs({"Holy Shock","Light of Dawn","Judgment","Crusader Strike","Cleanse"})--,"Judgment","Consecration","Cleanse","Divine Protection","Hammer of Justice","Avenging Wrath","Every Man for Himself","Divine Shield","Aura Mastery","Blessing of Freedom", "Blessing of Sacrifice", "Blessing of Protection","Divine Steed","Lay on Hands","Talent Row 1","Talent Row 2","Talent Row 3","Talent Row 5","Talent Row 7"})
-			end
-		end
+		end		
+		parseSpellCDs(PrioritiesDB[vars.class][vars.spec].CDS)
 	end
 	function e:UNIT_SPELLCAST_SUCCEEDED(...)
 		local unitID, spellName, rank, lineID, spellID = ...
@@ -833,10 +949,10 @@ local function classPriorities()
 		end
 	end	
 	function e:PLAYER_TALENT_UPDATE(...)
-	    buildCDs()
+	    setupSpec()
 	end
 	function e:PLAYER_LOGIN(...)
-		buildCDs()
+		setupSpec()
 		f:SetScript("OnUpdate", function(self, elapsed)
 		  timer = timer + elapsed
 		  if timer >= CYCLE_TIME then
