@@ -60,6 +60,8 @@ local function classPriorities()
 		args.var.step = args.step
 		args.var.minval = args.minval
 		args.var.maxval = args.maxval
+		args.var.savetable = args.savetable
+		args.var.savevar = args.savevar
 		args.var:SetScript("OnMouseWheel", function(self, delta)
 			self:SetText(math.floor(self:GetNumber()+delta*self.step))
 			if self:GetNumber() > self.maxval then
@@ -67,6 +69,7 @@ local function classPriorities()
 			elseif self:GetNumber() < self.minval then
 				self:SetText(self.minval)
 			end
+			self.savetable[self.savevar] = self:GetNumber()
 		end)
 	end
 	vars.prioritySpellIcon = {}
@@ -84,106 +87,174 @@ local function classPriorities()
 		
 	vars.options = {}
 	
-	--monk options
-	vars.options.Monk = {}
-	--monk mistweaver options
-	vars.options.Monk[2] = {}
-	vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 500})
+	vars.buildOptions = {}
 	
-	vars.options.Monk[2].lines = {}
-	-- Cocoon
-	vars.options.Monk[2].lines[1] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[1].text1, frame = vars.options.Monk[2].frame, text = "Life Cocoon if priority unit's health is below", left = 10, top = -30})
+	vars.buildOptions.Monk = {}	
 	
-	vars.options.Monk[2].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[1].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[1].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 25, top = -30, left = 350})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[1].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 380, top = -30})
-	--essence font
-	vars.options.Monk[2].lines[2] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[2].text1, frame = vars.options.Monk[2].frame, text = "Essence Font if at least", left = 10, top = -50})	
-	
-	vars.options.Monk[2].lines[2].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoeCount", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[2].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 5, top = -50, left = 190})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[2].text2, frame = vars.options.Monk[2].frame, text = "raid members are within range and below", left = 215, top = -50})
-		
-	vars.options.Monk[2].lines[2].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[2].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -50, left = 525})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[2].text3, frame = vars.options.Monk[2].frame, text = "% health and no more than", left = 560, top = -50})	
-	
-	vars.options.Monk[2].lines[2].buffCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].buffCount", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[2].buffCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 2, top = -50, left = 770})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "raid members", left = 800, top = -70})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "have the Essence font buff and I'm not moving.", left = 560, top = -70})
-	
-	--renewing mist
-	vars.options.Monk[2].lines[3] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Renewing Mist if priority unit doesn't have the renewing mist buff and their health is below", left = 10, top = -90})
-	
-	vars.options.Monk[2].lines[3].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[3].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[3].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -90, left = 700})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[3].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 735, top = -90})
-	--Enveloping Mist
-	vars.options.Monk[2].lines[4] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Enveloption Mist if priority unit doesn't have the enveloping mist buff and their health is below", left = 10, top = -110})
-	
-	vars.options.Monk[2].lines[4].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[4].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[4].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -110, left = 730})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[4].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving or", left = 765, top = -110})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[4].text3, frame = vars.options.Monk[2].frame, text = "you have the thunder focus tea buff.", left = 560, top = -130})
-	
-	--vivify
-	vars.options.Monk[2].lines[5] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[5].text1, frame = vars.options.Monk[2].frame, text = "Vivify if priority unit's health is below", left = 10, top = -150})
-	
-	vars.options.Monk[2].lines[5].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[5].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 70, top = -150, left = 300})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[5].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving and there are at least ", left = 335, top = -150})
-	
-	vars.options.Monk[2].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[5].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = 2, top = -150, left = 700})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[5].text3, frame = vars.options.Monk[2].frame, text = "other raid member below ", left = 725, top = -150})
-	
-	vars.options.Monk[2].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[5].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -150, left = 915})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[5].text4, frame = vars.options.Monk[2].frame, text = "%", left = 950, top = -150})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[5].text5, frame = vars.options.Monk[2].frame, text = "health or I have the uplifting trance buff.", left = 560, top = -170})
-	
-	--Effuse	
-		-- elseif spellCD("Effuse") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[6].healthPerc:GetNumber()/100 and not vars.isMoving("player") then
-	vars.options.Monk[2].lines[6] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[6].text1, frame = vars.options.Monk[2].frame, text = "Effuse if priority unit's health is below", left = 10, top = -190})
-	
-	vars.options.Monk[2].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[6].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-	vars.buildFields({var = vars.options.Monk[2].lines[6].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = 90, top = -190, left = 310})
-	
-	vars.buildLines({var = vars.options.Monk[2].lines[6].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 345, top = -190})	
-	
-	vars.options.Monk[2].lines[7] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[7].text1, frame = vars.options.Monk[2].frame, text = "When in melee range Tiger Palm until you have three stacks of Teachings of the Monastery.", left = 10, top = -210})	
-	
-	vars.options.Monk[2].lines[8] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[8].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Rising Sun Kick.", left = 10, top = -230})	
-	
-	vars.options.Monk[2].lines[9] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Blackout Kick.", left = 10, top = -250})
-	
-	vars.options.Monk[2].lines[9] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in range of your target Crackling Jade Lightning.", left = 10, top = -270})
-	
-	vars.options.Monk[2].lines[10] = {}
-	vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -10})
+	vars.buildOptions.Monk[2] = function()
+		if vars.options.Monk == nil then
+			--monk options
+			vars.options.Monk = {}
+		end
+		if PrioritiesDB.Monk == nil then
+			PrioritiesDB.Monk = {}				
+		end			
+		if vars.options.Monk[2] == nil then			
+			if PrioritiesDB.Monk[2] == nil then
+				PrioritiesDB.Monk[2] = {}				
+			end			
+			--monk mistweaver options
+			vars.options.Monk[2] = {}
+			vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 300})
+			
+			if PrioritiesDB.Monk[2].lines == nil then
+				PrioritiesDB.Monk[2].lines = {}				
+			end			
+			vars.options.Monk[2].lines = {}
+			-- Cocoon
+			if PrioritiesDB.Monk[2].lines[1] == nil then
+				PrioritiesDB.Monk[2].lines[1] = {}				
+			end			
+			vars.options.Monk[2].lines[1] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[1].text1, frame = vars.options.Monk[2].frame, text = "Life Cocoon if priority unit's health is below", left = 10, top = -30})
+			
+			if PrioritiesDB.Monk[2].lines[1].healthPerc == nil then
+				PrioritiesDB.Monk[2].lines[1].healthPerc = 25				
+			end						
+			vars.options.Monk[2].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[1].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[1].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[1].healthPerc, top = -30, left = 350, savetable = PrioritiesDB.Monk[2].lines[1], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[1].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 380, top = -30})
+			
+			
+			--essence font
+			if PrioritiesDB.Monk[2].lines[2] == nil then
+				PrioritiesDB.Monk[2].lines[2] = {}				
+			end			
+			vars.options.Monk[2].lines[2] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text1, frame = vars.options.Monk[2].frame, text = "Essence Font if at least", left = 10, top = -50})	
+			
+			if PrioritiesDB.Monk[2].lines[2].aoeCount == nil then
+				PrioritiesDB.Monk[2].lines[2].aoeCount = 5				
+			end		
+			vars.options.Monk[2].lines[2].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoeCount", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[2].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].aoeCount, top = -50, left = 190, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoeCount"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text2, frame = vars.options.Monk[2].frame, text = "raid members are within range and below", left = 215, top = -50})
+			
+			if PrioritiesDB.Monk[2].lines[2].aoePercent == nil then
+				PrioritiesDB.Monk[2].lines[2].aoePercent = 90				
+			end			
+			vars.options.Monk[2].lines[2].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[2].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[2].aoePercent, top = -50, left = 525, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoePercent"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text3, frame = vars.options.Monk[2].frame, text = "% health and no more than", left = 560, top = -50})	
+			
+			if PrioritiesDB.Monk[2].lines[2].buffCount == nil then
+				PrioritiesDB.Monk[2].lines[2].buffCount = 2			
+			end		
+			vars.options.Monk[2].lines[2].buffCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].buffCount", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[2].buffCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].buffCount, top = -50, left = 770, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "buffCount"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "raid members", left = 800, top = -70})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "have the Essence font buff and I'm not moving.", left = 560, top = -70})
+			
+			--renewing mist
+			if PrioritiesDB.Monk[2].lines[3] == nil then
+				PrioritiesDB.Monk[2].lines[3] = {}				
+			end			
+			vars.options.Monk[2].lines[3] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Renewing Mist if priority unit doesn't have the renewing mist buff and their health is below", left = 10, top = -90})
+			
+			if PrioritiesDB.Monk[2].lines[3].healthPerc == nil then
+				PrioritiesDB.Monk[2].lines[3].healthPerc = 90			
+			end		
+			vars.options.Monk[2].lines[3].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[3].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[3].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[3].healthPerc, top = -90, left = 700, savetable = PrioritiesDB.Monk[2].lines[3], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 735, top = -90})
+			--Enveloping Mist
+			if PrioritiesDB.Monk[2].lines[4] == nil then
+				PrioritiesDB.Monk[2].lines[4] = {}				
+			end			
+			vars.options.Monk[2].lines[4] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Enveloption Mist if priority unit doesn't have the enveloping mist buff and their health is below", left = 10, top = -110})
+			
+			if PrioritiesDB.Monk[2].lines[4].healthPerc == nil then
+				PrioritiesDB.Monk[2].lines[4].healthPerc = 90				
+			end		
+			vars.options.Monk[2].lines[4].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[4].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[4].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[4].healthPerc, top = -110, left = 730, savetable = PrioritiesDB.Monk[2].lines[4], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[4].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving or", left = 765, top = -110})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[4].text3, frame = vars.options.Monk[2].frame, text = "you have the thunder focus tea buff.", left = 560, top = -130})
+			
+			--vivify
+			if PrioritiesDB.Monk[2].lines[5] == nil then
+				PrioritiesDB.Monk[2].lines[5] = {}				
+			end			
+			vars.options.Monk[2].lines[5] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text1, frame = vars.options.Monk[2].frame, text = "Vivify if priority unit's health is below", left = 10, top = -150})
+			
+			if PrioritiesDB.Monk[2].lines[5].healthPerc == nil then
+				PrioritiesDB.Monk[2].lines[5].healthPerc = 70			
+			end		
+			vars.options.Monk[2].lines[5].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[5].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].healthPerc, top = -150, left = 300, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving and there are at least ", left = 335, top = -150})
+			
+			if PrioritiesDB.Monk[2].lines[5].aoeCount == nil then
+				PrioritiesDB.Monk[2].lines[5].aoeCount = 2			
+			end		
+			vars.options.Monk[2].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[5].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[5].aoeCount, top = -150, left = 700, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoeCount"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text3, frame = vars.options.Monk[2].frame, text = "other raid member below ", left = 725, top = -150})
+			
+			if PrioritiesDB.Monk[2].lines[5].aoePercent == nil then
+				PrioritiesDB.Monk[2].lines[5].aoePercent = 90			
+			end		
+			vars.options.Monk[2].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[5].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].aoePercent, top = -150, left = 915, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoePercent"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text4, frame = vars.options.Monk[2].frame, text = "%", left = 950, top = -150})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text5, frame = vars.options.Monk[2].frame, text = "health or I have the uplifting trance buff.", left = 560, top = -170})
+			
+			--Effuse	
+			if PrioritiesDB.Monk[2].lines[6] == nil then
+				PrioritiesDB.Monk[2].lines[6] = {}				
+			end			
+			vars.options.Monk[2].lines[6] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[6].text1, frame = vars.options.Monk[2].frame, text = "Effuse if priority unit's health is below", left = 10, top = -190})
+			
+			if PrioritiesDB.Monk[2].lines[6].healthPerc == nil then
+				PrioritiesDB.Monk[2].lines[6].healthPerc = 90			
+			end		
+			vars.options.Monk[2].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[6].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Monk[2].lines[6].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[6].healthPerc, top = -190, left = 310, savetable = PrioritiesDB.Monk[2].lines[6], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Monk[2].lines[6].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 345, top = -190})	
+			
+			vars.options.Monk[2].lines[7] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[7].text1, frame = vars.options.Monk[2].frame, text = "When in melee range Tiger Palm until you have three stacks of Teachings of the Monastery.", left = 10, top = -210})	
+			
+			vars.options.Monk[2].lines[8] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[8].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Rising Sun Kick.", left = 10, top = -230})	
+			
+			vars.options.Monk[2].lines[9] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Blackout Kick.", left = 10, top = -250})
+			
+			vars.options.Monk[2].lines[9] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in range of your target Crackling Jade Lightning.", left = 10, top = -270})
+			
+			vars.options.Monk[2].lines[10] = {}
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -10})
+		end
+	end
 	local function distanceBetweenUs(unit1, unit2)
 		local result = 999
 		local y1, x1, _, instance1 = UnitPosition(unit1)
@@ -734,10 +805,12 @@ local function classPriorities()
 		end
 		if UnitClass("player") == "Monk" then
 			if GetSpecialization() == 2 then
+				vars.buildOptions[UnitClass("player")][GetSpecialization()]()
 				parseSpellCDs({"Sheilun's Gift","Renewing Mist","Thunder Focus Tea","Detox","Life Cocoon","Revival","Talent Row 7","Talent Row 6","Talent Row 5","Talent Row 4","Talent Row 1"}) --
 			end
 		elseif UnitClass("player") == "Paladin" then
 			if GetSpecialization() == 1 then
+				vars.buildOptions[UnitClass("player")][GetSpecialization()]()
 				parseSpellCDs({"Holy Shock","Light of Dawn","Judgment","Crusader Strike","Cleanse"})--,"Judgment","Consecration","Cleanse","Divine Protection","Hammer of Justice","Avenging Wrath","Every Man for Himself","Divine Shield","Aura Mastery","Blessing of Freedom", "Blessing of Sacrifice", "Blessing of Protection","Divine Steed","Lay on Hands","Talent Row 1","Talent Row 2","Talent Row 3","Talent Row 5","Talent Row 7"})
 			end
 		end
