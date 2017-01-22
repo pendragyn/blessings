@@ -313,9 +313,9 @@ local function classPriorities()
 			if PrioritiesDB.Paladin[1] == nil then
 				PrioritiesDB.Paladin[1] = {}				
 			end			
-			--monk mistweaver options
+			--Paladin holy options
 			vars.options.Paladin[1] = {}
-			vars.buildFrames({var = vars.options.Paladin[1], width = 1000, height = 300})
+			vars.buildFrames({var = vars.options.Paladin[1], width = 1000, height = 370})
 			
 			if PrioritiesDB.Paladin[1].lines == nil then
 				PrioritiesDB.Paladin[1].lines = {}				
@@ -326,22 +326,171 @@ local function classPriorities()
 				PrioritiesDB.Paladin[1].lines[1] = {}				
 			end			
 			vars.options.Paladin[1].lines[1] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[1].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock if priority unit's health is below", left = 10, top = -30})
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock if priority unit's health is below", left = 10, top = -10})
 			
 			if PrioritiesDB.Paladin[1].lines[1].healthPerc == nil then
-				PrioritiesDB.Paladin[1].lines[1].healthPerc = 25				
+				PrioritiesDB.Paladin[1].lines[1].healthPerc = 90			
 			end						
 			vars.options.Paladin[1].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[1].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[1].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[1].healthPerc, top = -30, left = 350, savetable = PrioritiesDB.Paladin[1].lines[1], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[1].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[1].healthPerc, top = -10, left = 350, savetable = PrioritiesDB.Paladin[1].lines[1], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[1].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -30})	
-			
-			--CDs	
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -10})	
+			--Holy Shock damage		
 			vars.options.Paladin[1].lines[2] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[2].text1, frame = vars.options.Paladin[1].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -80})			
+			vars.buildLines({var = vars.options.Paladin[1].lines[2].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock hostile if targeted and in range", left = 10, top = -30})
+			--Light of Dawn			
+			if PrioritiesDB.Paladin[1].lines[3] == nil then
+				PrioritiesDB.Paladin[1].lines[3] = {}				
+			end			
+			vars.options.Paladin[1].lines[3] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of Dawn if ", left = 10, top = -50})
+			
+			if PrioritiesDB.Paladin[1].lines[3].aoeCount == nil then
+				PrioritiesDB.Paladin[1].lines[3].aoeCount = 3				
+			end						
+			vars.options.Paladin[1].lines[3].aoeCount = CreateFrame("EditBox", "vars.options.Paladin[1].lines[3].aoeCount", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[3].aoeCount, top = -50, left = 150, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoeCount"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 175, top = -50})	
+			
+			if PrioritiesDB.Paladin[1].lines[3].aoePercent == nil then
+				PrioritiesDB.Paladin[1].lines[3].aoePercent = 90			
+			end						
+			vars.options.Paladin[1].lines[3].aoePercent = CreateFrame("EditBox", "vars.options.Paladin[1].lines[3].aoePercent", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[3].aoePercent, top = -50, left = 355, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoePercent"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 385, top = -50})
+			--judgment of light	
+			vars.options.Paladin[1].lines[4] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[4].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range and using judgment of light", left = 10, top = -70})
+			--Holy Prism			
+			if PrioritiesDB.Paladin[1].lines[5] == nil then
+				PrioritiesDB.Paladin[1].lines[5] = {}				
+			end			
+			vars.options.Paladin[1].lines[5] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text1, frame = vars.options.Paladin[1].frame, text = "Holy Prism if ", left = 10, top = -90})
+			
+			if PrioritiesDB.Paladin[1].lines[5].aoeCount == nil then
+				PrioritiesDB.Paladin[1].lines[5].aoeCount = 3				
+			end						
+			vars.options.Paladin[1].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Paladin[1].lines[5].aoeCount", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[5].aoeCount, top = -90, left = 120, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoeCount"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 145, top = -90})	
+			
+			if PrioritiesDB.Paladin[1].lines[5].aoePercent == nil then
+				PrioritiesDB.Paladin[1].lines[5].aoePercent = 90			
+			end						
+			vars.options.Paladin[1].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Paladin[1].lines[5].aoePercent", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[5].aoePercent, top = -90, left = 325, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoePercent"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 355, top = -90})
+			
+			-- Bestow Faith
+			if PrioritiesDB.Paladin[1].lines[6] == nil then
+				PrioritiesDB.Paladin[1].lines[6] = {}				
+			end			
+			vars.options.Paladin[1].lines[6] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[6].text1, frame = vars.options.Paladin[1].frame, text = "Bestow Faith if priority unit's health is below", left = 10, top = -110})
+			
+			if PrioritiesDB.Paladin[1].lines[6].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[6].healthPerc = 90				
+			end						
+			vars.options.Paladin[1].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[6].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[6].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[6].healthPerc, top = -110, left = 350, savetable = PrioritiesDB.Paladin[1].lines[6], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[6].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -110})	
+			--Tyr's Deliverance
+			vars.options.Paladin[1].lines[7] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[7].text1, frame = vars.options.Paladin[1].frame, text = "Tyr's Deliverance the same conditions as Light of Dawn", left = 10, top = -130})
+			--Light of the Martyr		
+			if PrioritiesDB.Paladin[1].lines[8] == nil then
+				PrioritiesDB.Paladin[1].lines[8] = {}				
+			end			
+			vars.options.Paladin[1].lines[8] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -150})
+			
+			if PrioritiesDB.Paladin[1].lines[8].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[8].healthPerc = 10		
+			end						
+			vars.options.Paladin[1].lines[8].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[8].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[8].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].healthPerc, top = -150, left = 405, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -150})	
+			
+			if PrioritiesDB.Paladin[1].lines[8].playerHealthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[8].playerHealthPerc = 90			
+			end						
+			vars.options.Paladin[1].lines[8].playerHealthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[8].playerHealthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[8].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].playerHealthPerc, top = -150, left = 660, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "playerHealthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -150})
+			-- Flash of Light
+			if PrioritiesDB.Paladin[1].lines[9] == nil then
+				PrioritiesDB.Paladin[1].lines[9] = {}				
+			end			
+			vars.options.Paladin[1].lines[9] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[9].text1, frame = vars.options.Paladin[1].frame, text = "Flash of Light if priority's health is below", left = 10, top = -170})
+			
+			if PrioritiesDB.Paladin[1].lines[9].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[9].healthPerc = 50				
+			end						
+			vars.options.Paladin[1].lines[9].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[9].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[9].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[9].healthPerc, top = -170, left = 350, savetable = PrioritiesDB.Paladin[1].lines[9], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[9].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -170})	
+			-- Holy Light
+			if PrioritiesDB.Paladin[1].lines[10] == nil then
+				PrioritiesDB.Paladin[1].lines[10] = {}				
+			end			
+			vars.options.Paladin[1].lines[10] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[10].text1, frame = vars.options.Paladin[1].frame, text = "Holy Light if priority unit's health is below", left = 10, top = -190})
+			
+			if PrioritiesDB.Paladin[1].lines[10].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[10].healthPerc = 90				
+			end						
+			vars.options.Paladin[1].lines[10].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[10].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[10].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[10].healthPerc, top = -190, left = 350, savetable = PrioritiesDB.Paladin[1].lines[10], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[10].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -190})
+
+			--Light of the Martyr		
+			if PrioritiesDB.Paladin[1].lines[11] == nil then
+				PrioritiesDB.Paladin[1].lines[11] = {}				
+			end			
+			vars.options.Paladin[1].lines[11] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -210})
+			
+			if PrioritiesDB.Paladin[1].lines[11].healthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[11].healthPerc = 50	
+			end						
+			vars.options.Paladin[1].lines[11].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[11].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[11].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].healthPerc, top = -210, left = 405, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "healthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -210})	
+			
+			if PrioritiesDB.Paladin[1].lines[11].playerHealthPerc == nil then
+				PrioritiesDB.Paladin[1].lines[11].playerHealthPerc = 90			
+			end						
+			vars.options.Paladin[1].lines[11].playerHealthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[11].playerHealthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
+			vars.buildFields({var = vars.options.Paladin[1].lines[11].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].playerHealthPerc, top = -210, left = 660, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "playerHealthPerc"})
+			
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -210})	
+			--Judgment	
+			vars.options.Paladin[1].lines[12] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[12].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range", left = 10, top = -230})				
+			--Crusader Strike	
+			vars.options.Paladin[1].lines[13] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[13].text1, frame = vars.options.Paladin[1].frame, text = "Crusader Strike hostile if targeted and in range", left = 10, top = -250})				
+			--Consecration	
+			vars.options.Paladin[1].lines[14] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[14].text1, frame = vars.options.Paladin[1].frame, text = "Consecration hostile if targeted and in range", left = 10, top = -270})			
+			--CDs	
+			vars.options.Paladin[1].lines[15] = {}
+			vars.buildLines({var = vars.options.Paladin[1].lines[15].text1, frame = vars.options.Paladin[1].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -310})			
 								
 			vars.options.Paladin[1].CDS = CreateFrame("EditBox", "vars.options.Paladin[1].CDS", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -100, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
+			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -330, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
 		end
 	end
 	local function distanceBetweenUs(unit1, unit2)
@@ -564,6 +713,16 @@ local function classPriorities()
 		vars.aoeCount1 = 0
 		vars.aoeCount2 = 0
 		vars.aoeCount3 = 0
+		vars.aoeRange = 30
+		if vars.class == "Paladin" and vars.spec == 1 then
+			vars.aoeRange = 15
+			if vars.talentChosen(7,2,"player") then
+				vars.aoeRange = vars.aoeRange * 1.3
+			end
+			if auraDuration("player","Rule of Law","HELPFUL") > 0 then
+				vars.aoeRange = vars.aoeRange * 1.5
+			end
+		end
 		for i = 1, groupCount do
 			testUnitID = getActionUnitID(groupType, i)
 			if not UnitIsDeadOrGhost(testUnitID) and isCastableOn(testUnitID) then -- and isCastableOn(testUnitID)			
@@ -583,7 +742,7 @@ local function classPriorities()
 					missingHealthInc = 0
 				end				
 				-- class specific stuff
-				if UnitClass("player") == "Monk" and distanceBetweenUs("player", testUnitID) <= 25 then
+				if vars.class == "Monk" and vars.spec == 2 and distanceBetweenUs("player", testUnitID) <= 25 then
 					if healthPercentInc < vars.options.Monk[2].lines[2].aoePercent:GetNumber()/100 then
 						vars.aoeCount1 = vars.aoeCount1 + 1
 					end
@@ -593,9 +752,16 @@ local function classPriorities()
 					if healthPercentInc < vars.options.Monk[2].lines[5].aoePercent:GetNumber()/100 then
 						vars.aoeCount3 = vars.aoeCount3 + 1
 					end					
-				elseif UnitClass("player") == "Paladin" and distanceBetweenUs("player", testUnitID) <= 15 then
-					if healthPercentInc < .9 then
-						vars.aoeCount1 = vars.aoeCount1 + 1
+				elseif vars.class == "Paladin" and vars.spec == 1 then
+					if distanceBetweenUs("player", testUnitID) <= vars.aoeRange then
+						if healthPercentInc < vars.options.Paladin[1].lines[3].aoePercent:GetNumber()/100 then
+							vars.aoeCount1 = vars.aoeCount1 + 1
+						end
+					end					
+					if distanceBetweenUs("player", testUnitID) <= 40 then
+						if healthPercentInc < vars.options.Paladin[1].lines[5].aoePercent:GetNumber()/100 then
+							vars.aoeCount2 = vars.aoeCount2 + 1
+						end
 					end
 				end
 				
@@ -665,21 +831,6 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
-		--shellun's gift
-		--print(math.floor(vars.priority.healthPercent*100))
-		--life cocoon
-		--essence font 5 or more at 80% health or below and not thunder focus tea buff
-		--renewing mist at 90% and not has renewing mist buff
-		--enveloping mist at 90% if doesnt have enveloping mist buff without moving or moving with thunder focus tea
-		--vivify with proc called "Uplifting Trance" 1 target without buff 3 targets 90%
-		--effuse at 90%
-		-- dps spells
-		--melee
-		--tiger palm Teachings of the Monastery x3
-		--rising sun kick
-		--black out kick
-		--range
-		--crackling jade lightning
 		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCharges("Sheilun's Gift") > 3 and spellCharges("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
 			vars.priority.spell = "Sheilun's Gift"
 		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
@@ -706,21 +857,35 @@ local function classPriorities()
 			vars.priority.spell = ""
 		end	
 	end
-	function paladinHealToUse()		
-		if spellCD("Light of Dawn") <= vars.timeToAct and vars.aoeCount1 >= 2 then
-			vars.priority.spell = "Light of Dawn"
-		elseif vars.priority.healthPercentInc == 0 then
-			vars.priority.spell = ""
-		elseif spellCD("Holy Shock") <= vars.timeToAct and IsSpellInRange("Holy Shock", vars.priority.unitID) == 1 and vars.priority.healthPercentInc < .9 then
+	function paladinHealToUse()
+		if spellCD("Holy Shock") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Holy Shock"
-		elseif spellCD("Flash of Light") <= vars.timeToAct and vars.priority.healthPercentInc < .9 and not vars.isMoving("player") then
-			vars.priority.spell = "Flash of Light"
-		elseif spellCD("Judgment") <= vars.timeToAct and IsSpellInRange("Judgment", "target") == 1 then
-			vars.priority.spell = "Judgment"
 		elseif spellCD("Holy Shock") <= vars.timeToAct and IsSpellInRange("Holy Shock", "target") == 1 then
 			vars.priority.spell = "Holy Shock"
+		elseif spellCD("Light of Dawn") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Paladin[1].lines[3].aoeCount:GetNumber() then
+			vars.priority.spell = "Light of Dawn"
+		elseif vars.talentChosen(6,3,"player") and spellCD("Judgment") <= vars.timeToAct and IsSpellInRange("Judgment", "target") == 1 then
+			vars.priority.spell = "Judgment"
+		elseif vars.talentChosen(5,3,"player") and spellCD("Holy Prism") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Paladin[1].lines[5].aoeCount:GetNumber() then
+			vars.priority.spell = "Holy Prism"
+		elseif spellCD("Bestow Faith") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[6].healthPerc:GetNumber()/100 then
+			vars.priority.spell = "Bestow Faith"
+		elseif spellCD("Tyr's Deliverance") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Paladin[1].lines[3].aoeCount:GetNumber() and not vars.isMoving("player") then
+			vars.priority.spell = "Tyr's Deliverance"
+		elseif spellCD("Light of the Martyr") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[8].healthPerc:GetNumber()/100 and vars.playerHealthPercent > vars.options.Paladin[1].lines[8].playerHealthPerc:GetNumber()/100 then
+			vars.priority.spell = "Light of the Martyr"
+		elseif spellCD("Flash of Light") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[9].healthPerc:GetNumber()/100 and not vars.isMoving("player") then
+			vars.priority.spell = "Flash of Light"
+		elseif spellCD("Holy Light") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[10].healthPerc:GetNumber()/100 and not vars.isMoving("player") and vars.spellTarget ~= vars.priority.unitID then
+			vars.priority.spell = "Holy Light"
+		elseif spellCD("Light of the Martyr") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Paladin[1].lines[11].healthPerc:GetNumber()/100 and vars.playerHealthPercent > vars.options.Paladin[1].lines[11].playerHealthPerc:GetNumber()/100 then
+			vars.priority.spell = "Light of the Martyr"
+		elseif spellCD("Judgment") <= vars.timeToAct and IsSpellInRange("Judgment", "target") == 1 then
+			vars.priority.spell = "Judgment"
 		elseif spellCD("Crusader Strike") <= vars.timeToAct and IsSpellInRange("Crusader Strike", "target") == 1 then
 			vars.priority.spell = "Crusader Strike"
+		elseif spellCD("Consecration") <= vars.timeToAct and IsSpellInRange("Crusader Strike", "target") == 1 then
+			vars.priority.spell = "Consecration"
 		else
 			vars.priority.spell = ""
 		end
@@ -748,6 +913,15 @@ local function classPriorities()
 		end
 		
 		vars.playerMaxHealth = UnitHealthMax("player")
+		vars.playerHealth = UnitHealth("player")
+		vars.playerHealthPercent = vars.playerHealth/vars.playerMaxHealth
+		vars.baseMana = UnitPowerMax("player", UnitPowerType("player"))/5
+		vars.playerMana = UnitPower("player", UnitPowerType("player"))
+		vars.haste = 1 + GetHaste()/100
+		vars.GCD = 1.5/(vars.haste)
+		if vars.GCD < .75 then
+			vars.GCD = .75
+		end
 		
 		memberToHeal()	
 		
