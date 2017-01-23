@@ -18,11 +18,8 @@ local function classPriorities()
 	vars.aoeCount1 = 0
 	vars.playerMaxHealth = UnitHealthMax("player")
 	vars.cds = {}
-	vars.menuButton = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
+	vars.menuButton = CreateFrame("Button", nil, UIParent, "UIPanelInfoButton")
 	vars.menuButton:SetPoint("BOTTOMLEFT", 0, 0)
-	vars.menuButton:SetWidth(20)
-	vars.menuButton:SetHeight(20) 
-	vars.menuButton:SetText("?")
 	vars.menuButton:SetScript("OnClick", function(self, button, down)
 		local c = UnitClass("player")
 		local s = GetSpecialization()
@@ -41,27 +38,11 @@ local function classPriorities()
 	end
 	
 	vars.buildFrames = function(args)
-		args.var.frame = CreateFrame("Frame", tostring(args.var)..".frame", UIParent)
-		args.var.frame:SetFrameStrata("HIGH")
+		args.var.frame = CreateFrame("Frame", tostring(args.var)..".frame", UIParent, "BasicFrameTemplateWithInset")
 		args.var.frame:SetWidth(args.width)
 		args.var.frame:SetHeight(args.height)
-		args.var.texture = args.var.frame:CreateTexture(nil,"OVERLAY ")
-		args.var.texture:SetAllPoints(args.var.frame)	
-		args.var.frame.texture = args.var.texture
 		args.var.frame:SetPoint("CENTER", 0, 100)
 		args.var.frame:Hide()
-		args.var.frame:SetFrameLevel(7)
-		args.var.texture:SetColorTexture(0,0,0,1)		
-		
-		args.var.closeButton = CreateFrame("Button", nil, args.var.frame, "UIPanelButtonTemplate")
-		args.var.closeButton.parent = args.var.frame
-		args.var.closeButton:SetPoint("TOPLEFT", 980, 0)
-		args.var.closeButton:SetWidth(20)
-		args.var.closeButton:SetHeight(20) 
-		args.var.closeButton:SetText("X")
-		args.var.closeButton:SetScript("OnClick", function(self, button, down)
-			self.parent:Hide()
-		end)
 	end	
 	vars.buildFields = function(args)
 		-- create args.var outside and pass it to the function to make it referenceable later
@@ -166,15 +147,15 @@ local function classPriorities()
 				PrioritiesDB.Monk[2].lines[1] = {}				
 			end			
 			vars.options.Monk[2].lines[1] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[1].text1, frame = vars.options.Monk[2].frame, text = "Life Cocoon if priority unit's health is below", left = 10, top = -30})
+			vars.buildLines({var = vars.options.Monk[2].lines[1].text1, frame = vars.options.Monk[2].frame, text = "Life Cocoon if priority unit's health is below", left = 10, top = -50})
 			
 			if PrioritiesDB.Monk[2].lines[1].healthPerc == nil then
 				PrioritiesDB.Monk[2].lines[1].healthPerc = 25				
 			end						
 			vars.options.Monk[2].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[1].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[1].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[1].healthPerc, top = -30, left = 350, savetable = PrioritiesDB.Monk[2].lines[1], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Monk[2].lines[1].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[1].healthPerc, top = -50, left = 350, savetable = PrioritiesDB.Monk[2].lines[1], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[1].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 380, top = -30})
+			vars.buildLines({var = vars.options.Monk[2].lines[1].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 380, top = -50})
 			
 			
 			--essence font
@@ -182,134 +163,134 @@ local function classPriorities()
 				PrioritiesDB.Monk[2].lines[2] = {}				
 			end			
 			vars.options.Monk[2].lines[2] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[2].text1, frame = vars.options.Monk[2].frame, text = "Essence Font if at least", left = 10, top = -50})	
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text1, frame = vars.options.Monk[2].frame, text = "Essence Font if at least", left = 10, top = -70})	
 			
 			if PrioritiesDB.Monk[2].lines[2].aoeCount == nil then
 				PrioritiesDB.Monk[2].lines[2].aoeCount = 5				
 			end		
 			vars.options.Monk[2].lines[2].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoeCount", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[2].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].aoeCount, top = -50, left = 190, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoeCount"})
+			vars.buildFields({var = vars.options.Monk[2].lines[2].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].aoeCount, top = -70, left = 190, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoeCount"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[2].text2, frame = vars.options.Monk[2].frame, text = "raid members are within range and below", left = 215, top = -50})
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text2, frame = vars.options.Monk[2].frame, text = "raid members are within range and below", left = 215, top = -70})
 			
 			if PrioritiesDB.Monk[2].lines[2].aoePercent == nil then
 				PrioritiesDB.Monk[2].lines[2].aoePercent = 90				
 			end			
 			vars.options.Monk[2].lines[2].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[2].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[2].aoePercent, top = -50, left = 525, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoePercent"})
+			vars.buildFields({var = vars.options.Monk[2].lines[2].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[2].aoePercent, top = -70, left = 525, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "aoePercent"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[2].text3, frame = vars.options.Monk[2].frame, text = "% health and no more than", left = 560, top = -50})	
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text3, frame = vars.options.Monk[2].frame, text = "% health and no more than", left = 560, top = -70})	
 			
 			if PrioritiesDB.Monk[2].lines[2].buffCount == nil then
 				PrioritiesDB.Monk[2].lines[2].buffCount = 2			
 			end		
 			vars.options.Monk[2].lines[2].buffCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[2].buffCount", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[2].buffCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].buffCount, top = -50, left = 770, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "buffCount"})
+			vars.buildFields({var = vars.options.Monk[2].lines[2].buffCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[2].buffCount, top = -70, left = 770, savetable = PrioritiesDB.Monk[2].lines[2], savevar = "buffCount"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "raid members", left = 800, top = -70})
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "raid members", left = 800, top = -90})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "have the Essence font buff and I'm not moving.", left = 560, top = -70})
+			vars.buildLines({var = vars.options.Monk[2].lines[2].text4, frame = vars.options.Monk[2].frame, text = "have the Essence font buff and I'm not moving.", left = 560, top = -90})
 			
 			--renewing mist
 			if PrioritiesDB.Monk[2].lines[3] == nil then
 				PrioritiesDB.Monk[2].lines[3] = {}				
 			end			
 			vars.options.Monk[2].lines[3] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Renewing Mist if priority unit doesn't have the renewing mist buff and their health is below", left = 10, top = -90})
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Renewing Mist if priority unit doesn't have the renewing mist buff and their health is below", left = 10, top = -110})
 			
 			if PrioritiesDB.Monk[2].lines[3].healthPerc == nil then
 				PrioritiesDB.Monk[2].lines[3].healthPerc = 90			
 			end		
 			vars.options.Monk[2].lines[3].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[3].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[3].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[3].healthPerc, top = -90, left = 700, savetable = PrioritiesDB.Monk[2].lines[3], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Monk[2].lines[3].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[3].healthPerc, top = -110, left = 700, savetable = PrioritiesDB.Monk[2].lines[3], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[3].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 735, top = -90})
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 735, top = -110})
 			--Enveloping Mist
 			if PrioritiesDB.Monk[2].lines[4] == nil then
 				PrioritiesDB.Monk[2].lines[4] = {}				
 			end			
 			vars.options.Monk[2].lines[4] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Enveloption Mist if priority unit doesn't have the enveloping mist buff and their health is below", left = 10, top = -110})
+			vars.buildLines({var = vars.options.Monk[2].lines[3].text1, frame = vars.options.Monk[2].frame, text = "Enveloption Mist if priority unit doesn't have the enveloping mist buff and their health is below", left = 10, top = -130})
 			
 			if PrioritiesDB.Monk[2].lines[4].healthPerc == nil then
 				PrioritiesDB.Monk[2].lines[4].healthPerc = 90				
 			end		
 			vars.options.Monk[2].lines[4].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[4].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[4].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[4].healthPerc, top = -110, left = 730, savetable = PrioritiesDB.Monk[2].lines[4], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Monk[2].lines[4].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[4].healthPerc, top = -130, left = 730, savetable = PrioritiesDB.Monk[2].lines[4], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[4].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving or", left = 765, top = -110})
+			vars.buildLines({var = vars.options.Monk[2].lines[4].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving or", left = 765, top = -130})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[4].text3, frame = vars.options.Monk[2].frame, text = "you have the thunder focus tea buff.", left = 560, top = -130})
+			vars.buildLines({var = vars.options.Monk[2].lines[4].text3, frame = vars.options.Monk[2].frame, text = "you have the thunder focus tea buff.", left = 560, top = -150})
 			
 			--vivify
 			if PrioritiesDB.Monk[2].lines[5] == nil then
 				PrioritiesDB.Monk[2].lines[5] = {}				
 			end			
 			vars.options.Monk[2].lines[5] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[5].text1, frame = vars.options.Monk[2].frame, text = "Vivify if priority unit's health is below", left = 10, top = -150})
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text1, frame = vars.options.Monk[2].frame, text = "Vivify if priority unit's health is below", left = 10, top = -170})
 			
 			if PrioritiesDB.Monk[2].lines[5].healthPerc == nil then
 				PrioritiesDB.Monk[2].lines[5].healthPerc = 70			
 			end		
 			vars.options.Monk[2].lines[5].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[5].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].healthPerc, top = -150, left = 300, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Monk[2].lines[5].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].healthPerc, top = -170, left = 300, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[5].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving and there are at least ", left = 335, top = -150})
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text2, frame = vars.options.Monk[2].frame, text = "% and you are not moving and there are at least ", left = 335, top = -170})
 			
 			if PrioritiesDB.Monk[2].lines[5].aoeCount == nil then
 				PrioritiesDB.Monk[2].lines[5].aoeCount = 2			
 			end		
 			vars.options.Monk[2].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[5].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[5].aoeCount, top = -150, left = 700, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoeCount"})
+			vars.buildFields({var = vars.options.Monk[2].lines[5].aoeCount, frame = vars.options.Monk[2].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Monk[2].lines[5].aoeCount, top = -170, left = 700, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoeCount"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[5].text3, frame = vars.options.Monk[2].frame, text = "other raid member below ", left = 725, top = -150})
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text3, frame = vars.options.Monk[2].frame, text = "other raid member below ", left = 725, top = -170})
 			
 			if PrioritiesDB.Monk[2].lines[5].aoePercent == nil then
 				PrioritiesDB.Monk[2].lines[5].aoePercent = 90			
 			end		
 			vars.options.Monk[2].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Monk[2].lines[5].aoePercent", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[5].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].aoePercent, top = -150, left = 915, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoePercent"})
+			vars.buildFields({var = vars.options.Monk[2].lines[5].aoePercent, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[5].aoePercent, top = -170, left = 915, savetable = PrioritiesDB.Monk[2].lines[5], savevar = "aoePercent"})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[5].text4, frame = vars.options.Monk[2].frame, text = "%", left = 950, top = -150})
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text4, frame = vars.options.Monk[2].frame, text = "%", left = 950, top = -170})
 			
-			vars.buildLines({var = vars.options.Monk[2].lines[5].text5, frame = vars.options.Monk[2].frame, text = "health or I have the uplifting trance buff.", left = 560, top = -170})
+			vars.buildLines({var = vars.options.Monk[2].lines[5].text5, frame = vars.options.Monk[2].frame, text = "health or I have the uplifting trance buff.", left = 560, top = -190})
 			
 			--Effuse	
 			if PrioritiesDB.Monk[2].lines[6] == nil then
 				PrioritiesDB.Monk[2].lines[6] = {}				
 			end			
 			vars.options.Monk[2].lines[6] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[6].text1, frame = vars.options.Monk[2].frame, text = "Effuse if priority unit's health is below", left = 10, top = -190})
+			vars.buildLines({var = vars.options.Monk[2].lines[6].text1, frame = vars.options.Monk[2].frame, text = "Effuse if priority unit's health is below", left = 10, top = -210})
 			
 			if PrioritiesDB.Monk[2].lines[6].healthPerc == nil then
 				PrioritiesDB.Monk[2].lines[6].healthPerc = 90			
 			end		
 			vars.options.Monk[2].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Monk[2].lines[6].healthPerc", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Monk[2].lines[6].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[6].healthPerc, top = -190, left = 310, savetable = PrioritiesDB.Monk[2].lines[6], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Monk[2].lines[6].healthPerc, frame = vars.options.Monk[2].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Monk[2].lines[6].healthPerc, top = -210, left = 310, savetable = PrioritiesDB.Monk[2].lines[6], savevar = "healthPerc"})
 			
 			vars.buildLines({var = vars.options.Monk[2].lines[6].text2, frame = vars.options.Monk[2].frame, text = "%.", left = 345, top = -190})	
 			
 			vars.options.Monk[2].lines[7] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[7].text1, frame = vars.options.Monk[2].frame, text = "When in melee range Tiger Palm until you have three stacks of Teachings of the Monastery.", left = 10, top = -210})	
+			vars.buildLines({var = vars.options.Monk[2].lines[7].text1, frame = vars.options.Monk[2].frame, text = "When in melee range Tiger Palm until you have three stacks of Teachings of the Monastery.", left = 10, top = -230})	
 			
 			vars.options.Monk[2].lines[8] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[8].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Rising Sun Kick.", left = 10, top = -230})	
+			vars.buildLines({var = vars.options.Monk[2].lines[8].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Rising Sun Kick.", left = 10, top = -250})	
 			
 			vars.options.Monk[2].lines[9] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Blackout Kick.", left = 10, top = -250})
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in melee range of your target Blackout Kick.", left = 10, top = -270})
 			
 			vars.options.Monk[2].lines[9] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in range of your target Crackling Jade Lightning.", left = 10, top = -270})
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "When in range of your target Crackling Jade Lightning.", left = 10, top = -290})
 			
 			vars.options.Monk[2].lines[10] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -10})
+			vars.buildLines({var = vars.options.Monk[2].lines[9].text1, frame = vars.options.Monk[2].frame, text = "Sheilun's Gift when it has at least 4 stacks and a non crit wont have any overhealing.", left = 10, top = -30})
 			
 			--CDs
 			vars.options.Monk[2].lines[11] = {}
-			vars.buildLines({var = vars.options.Monk[2].lines[11].text1, frame = vars.options.Monk[2].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -290})			
+			vars.buildLines({var = vars.options.Monk[2].lines[11].text1, frame = vars.options.Monk[2].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -330})			
 								
 			vars.options.Monk[2].CDS = CreateFrame("EditBox", "vars.options.Monk[2].CDS", vars.options.Monk[2].frame, "InputBoxTemplate")
-			vars.buildCDfield({var = vars.options.Monk[2].CDS, frame = vars.options.Monk[2].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Monk[2].CDS, top = -310, left = 10, savetable = PrioritiesDB.Monk[2], savevar = "CDS"})
+			vars.buildCDfield({var = vars.options.Monk[2].CDS, frame = vars.options.Monk[2].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Monk[2].CDS, top = -350, left = 10, savetable = PrioritiesDB.Monk[2], savevar = "CDS"})
 		end
 	end
 	
@@ -339,171 +320,171 @@ local function classPriorities()
 				PrioritiesDB.Paladin[1].lines[1] = {}				
 			end			
 			vars.options.Paladin[1].lines[1] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[1].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock if priority unit's health is below", left = 10, top = -10})
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock if priority unit's health is below", left = 10, top = -30})
 			
 			if PrioritiesDB.Paladin[1].lines[1].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[1].healthPerc = 90			
 			end						
 			vars.options.Paladin[1].lines[1].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[1].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[1].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[1].healthPerc, top = -10, left = 350, savetable = PrioritiesDB.Paladin[1].lines[1], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[1].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[1].healthPerc, top = -30, left = 350, savetable = PrioritiesDB.Paladin[1].lines[1], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[1].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -10})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[1].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -30})	
 			--Holy Shock damage		
 			vars.options.Paladin[1].lines[2] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[2].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock hostile if targeted and in range", left = 10, top = -30})
+			vars.buildLines({var = vars.options.Paladin[1].lines[2].text1, frame = vars.options.Paladin[1].frame, text = "Holy Shock hostile if targeted and in range", left = 10, top = -50})
 			--Light of Dawn			
 			if PrioritiesDB.Paladin[1].lines[3] == nil then
 				PrioritiesDB.Paladin[1].lines[3] = {}				
 			end			
 			vars.options.Paladin[1].lines[3] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of Dawn if ", left = 10, top = -50})
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of Dawn if ", left = 10, top = -70})
 			
 			if PrioritiesDB.Paladin[1].lines[3].aoeCount == nil then
 				PrioritiesDB.Paladin[1].lines[3].aoeCount = 3				
 			end						
 			vars.options.Paladin[1].lines[3].aoeCount = CreateFrame("EditBox", "vars.options.Paladin[1].lines[3].aoeCount", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[3].aoeCount, top = -50, left = 150, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoeCount"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[3].aoeCount, top = -70, left = 150, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoeCount"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 175, top = -50})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 175, top = -70})	
 			
 			if PrioritiesDB.Paladin[1].lines[3].aoePercent == nil then
 				PrioritiesDB.Paladin[1].lines[3].aoePercent = 90			
 			end						
 			vars.options.Paladin[1].lines[3].aoePercent = CreateFrame("EditBox", "vars.options.Paladin[1].lines[3].aoePercent", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[3].aoePercent, top = -50, left = 355, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoePercent"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[3].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[3].aoePercent, top = -70, left = 355, savetable = PrioritiesDB.Paladin[1].lines[3], savevar = "aoePercent"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 385, top = -50})
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 385, top = -70})
 			--judgment of light	
 			vars.options.Paladin[1].lines[4] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[4].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range and using judgment of light", left = 10, top = -70})
+			vars.buildLines({var = vars.options.Paladin[1].lines[4].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range and using judgment of light", left = 10, top = -90})
 			--Holy Prism			
 			if PrioritiesDB.Paladin[1].lines[5] == nil then
 				PrioritiesDB.Paladin[1].lines[5] = {}				
 			end			
 			vars.options.Paladin[1].lines[5] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[5].text1, frame = vars.options.Paladin[1].frame, text = "Holy Prism if ", left = 10, top = -90})
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text1, frame = vars.options.Paladin[1].frame, text = "Holy Prism if ", left = 10, top = -110})
 			
 			if PrioritiesDB.Paladin[1].lines[5].aoeCount == nil then
 				PrioritiesDB.Paladin[1].lines[5].aoeCount = 3				
 			end						
 			vars.options.Paladin[1].lines[5].aoeCount = CreateFrame("EditBox", "vars.options.Paladin[1].lines[5].aoeCount", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[5].aoeCount, top = -90, left = 120, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoeCount"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoeCount, frame = vars.options.Paladin[1].frame, width = 20, step = 1, minval = 0, maxval = 40,defaultval = PrioritiesDB.Paladin[1].lines[5].aoeCount, top = -110, left = 120, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoeCount"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 145, top = -90})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "raid members are below", left = 145, top = -110})	
 			
 			if PrioritiesDB.Paladin[1].lines[5].aoePercent == nil then
 				PrioritiesDB.Paladin[1].lines[5].aoePercent = 90			
 			end						
 			vars.options.Paladin[1].lines[5].aoePercent = CreateFrame("EditBox", "vars.options.Paladin[1].lines[5].aoePercent", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[5].aoePercent, top = -90, left = 325, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoePercent"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[5].aoePercent, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[5].aoePercent, top = -110, left = 325, savetable = PrioritiesDB.Paladin[1].lines[5], savevar = "aoePercent"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 355, top = -90})
+			vars.buildLines({var = vars.options.Paladin[1].lines[5].text2, frame = vars.options.Paladin[1].frame, text = "% and in range.", left = 355, top = -110})
 			
 			-- Bestow Faith
 			if PrioritiesDB.Paladin[1].lines[6] == nil then
 				PrioritiesDB.Paladin[1].lines[6] = {}				
 			end			
 			vars.options.Paladin[1].lines[6] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[6].text1, frame = vars.options.Paladin[1].frame, text = "Bestow Faith if priority unit's health is below", left = 10, top = -110})
+			vars.buildLines({var = vars.options.Paladin[1].lines[6].text1, frame = vars.options.Paladin[1].frame, text = "Bestow Faith if priority unit's health is below", left = 10, top = -130})
 			
 			if PrioritiesDB.Paladin[1].lines[6].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[6].healthPerc = 90				
 			end						
 			vars.options.Paladin[1].lines[6].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[6].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[6].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[6].healthPerc, top = -110, left = 350, savetable = PrioritiesDB.Paladin[1].lines[6], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[6].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[6].healthPerc, top = -130, left = 350, savetable = PrioritiesDB.Paladin[1].lines[6], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[6].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -110})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[6].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -130})	
 			--Tyr's Deliverance
 			vars.options.Paladin[1].lines[7] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[7].text1, frame = vars.options.Paladin[1].frame, text = "Tyr's Deliverance the same conditions as Light of Dawn", left = 10, top = -130})
+			vars.buildLines({var = vars.options.Paladin[1].lines[7].text1, frame = vars.options.Paladin[1].frame, text = "Tyr's Deliverance the same conditions as Light of Dawn", left = 10, top = -150})
 			--Light of the Martyr		
 			if PrioritiesDB.Paladin[1].lines[8] == nil then
 				PrioritiesDB.Paladin[1].lines[8] = {}				
 			end			
 			vars.options.Paladin[1].lines[8] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -150})
+			vars.buildLines({var = vars.options.Paladin[1].lines[3].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -170})
 			
 			if PrioritiesDB.Paladin[1].lines[8].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[8].healthPerc = 10		
 			end						
 			vars.options.Paladin[1].lines[8].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[8].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[8].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].healthPerc, top = -150, left = 405, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[8].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].healthPerc, top = -170, left = 405, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -150})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -170})	
 			
 			if PrioritiesDB.Paladin[1].lines[8].playerHealthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[8].playerHealthPerc = 90			
 			end						
 			vars.options.Paladin[1].lines[8].playerHealthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[8].playerHealthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[8].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].playerHealthPerc, top = -150, left = 660, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "playerHealthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[8].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[8].playerHealthPerc, top = -170, left = 660, savetable = PrioritiesDB.Paladin[1].lines[8], savevar = "playerHealthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -150})
+			vars.buildLines({var = vars.options.Paladin[1].lines[8].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -170})
 			-- Flash of Light
 			if PrioritiesDB.Paladin[1].lines[9] == nil then
 				PrioritiesDB.Paladin[1].lines[9] = {}				
 			end			
 			vars.options.Paladin[1].lines[9] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[9].text1, frame = vars.options.Paladin[1].frame, text = "Flash of Light if priority's health is below", left = 10, top = -170})
+			vars.buildLines({var = vars.options.Paladin[1].lines[9].text1, frame = vars.options.Paladin[1].frame, text = "Flash of Light if priority's health is below", left = 10, top = -190})
 			
 			if PrioritiesDB.Paladin[1].lines[9].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[9].healthPerc = 50				
 			end						
 			vars.options.Paladin[1].lines[9].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[9].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[9].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[9].healthPerc, top = -170, left = 350, savetable = PrioritiesDB.Paladin[1].lines[9], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[9].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[9].healthPerc, top = -190, left = 350, savetable = PrioritiesDB.Paladin[1].lines[9], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[9].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -170})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[9].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -190})	
 			-- Holy Light
 			if PrioritiesDB.Paladin[1].lines[10] == nil then
 				PrioritiesDB.Paladin[1].lines[10] = {}				
 			end			
 			vars.options.Paladin[1].lines[10] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[10].text1, frame = vars.options.Paladin[1].frame, text = "Holy Light if priority unit's health is below", left = 10, top = -190})
+			vars.buildLines({var = vars.options.Paladin[1].lines[10].text1, frame = vars.options.Paladin[1].frame, text = "Holy Light if priority unit's health is below", left = 10, top = -210})
 			
 			if PrioritiesDB.Paladin[1].lines[10].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[10].healthPerc = 90				
 			end						
 			vars.options.Paladin[1].lines[10].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[10].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[10].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[10].healthPerc, top = -190, left = 350, savetable = PrioritiesDB.Paladin[1].lines[10], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[10].healthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[10].healthPerc, top = -210, left = 350, savetable = PrioritiesDB.Paladin[1].lines[10], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[10].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -190})
+			vars.buildLines({var = vars.options.Paladin[1].lines[10].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 380, top = -210})
 
 			--Light of the Martyr		
 			if PrioritiesDB.Paladin[1].lines[11] == nil then
 				PrioritiesDB.Paladin[1].lines[11] = {}				
 			end			
 			vars.options.Paladin[1].lines[11] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[11].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -210})
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text1, frame = vars.options.Paladin[1].frame, text = "Light of the Martyr if priority unit's health is below", left = 10, top = -230})
 			
 			if PrioritiesDB.Paladin[1].lines[11].healthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[11].healthPerc = 50	
 			end						
 			vars.options.Paladin[1].lines[11].healthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[11].healthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[11].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].healthPerc, top = -210, left = 405, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "healthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[11].healthPerc, frame = vars.options.Paladin[1].frame, width = 20, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].healthPerc, top = -230, left = 405, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "healthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -210})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "% and player's health is above", left = 430, top = -230})	
 			
 			if PrioritiesDB.Paladin[1].lines[11].playerHealthPerc == nil then
 				PrioritiesDB.Paladin[1].lines[11].playerHealthPerc = 90			
 			end						
 			vars.options.Paladin[1].lines[11].playerHealthPerc = CreateFrame("EditBox", "vars.options.Paladin[1].lines[11].playerHealthPerc", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildFields({var = vars.options.Paladin[1].lines[11].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].playerHealthPerc, top = -210, left = 660, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "playerHealthPerc"})
+			vars.buildFields({var = vars.options.Paladin[1].lines[11].playerHealthPerc, frame = vars.options.Paladin[1].frame, width = 30, step = 5, minval = 0, maxval = 100,defaultval = PrioritiesDB.Paladin[1].lines[11].playerHealthPerc, top = -230, left = 660, savetable = PrioritiesDB.Paladin[1].lines[11], savevar = "playerHealthPerc"})
 			
-			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -210})	
+			vars.buildLines({var = vars.options.Paladin[1].lines[11].text2, frame = vars.options.Paladin[1].frame, text = "%.", left = 690, top = -230})	
 			--Judgment	
 			vars.options.Paladin[1].lines[12] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[12].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range", left = 10, top = -230})				
+			vars.buildLines({var = vars.options.Paladin[1].lines[12].text1, frame = vars.options.Paladin[1].frame, text = "Judgment hostile if targeted and in range", left = 10, top = -250})				
 			--Crusader Strike	
 			vars.options.Paladin[1].lines[13] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[13].text1, frame = vars.options.Paladin[1].frame, text = "Crusader Strike hostile if targeted and in range", left = 10, top = -250})				
+			vars.buildLines({var = vars.options.Paladin[1].lines[13].text1, frame = vars.options.Paladin[1].frame, text = "Crusader Strike hostile if targeted and in range", left = 10, top = -270})				
 			--Consecration	
 			vars.options.Paladin[1].lines[14] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[14].text1, frame = vars.options.Paladin[1].frame, text = "Consecration hostile if targeted and in range", left = 10, top = -270})			
+			vars.buildLines({var = vars.options.Paladin[1].lines[14].text1, frame = vars.options.Paladin[1].frame, text = "Consecration hostile if targeted and in range", left = 10, top = -290})			
 			--CDs	
 			vars.options.Paladin[1].lines[15] = {}
-			vars.buildLines({var = vars.options.Paladin[1].lines[15].text1, frame = vars.options.Paladin[1].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -310})			
+			vars.buildLines({var = vars.options.Paladin[1].lines[15].text1, frame = vars.options.Paladin[1].frame, text = "CDs.  Use Talent Row X for talent CDS. Include a | after each item.", left = 10, top = -320})			
 								
 			vars.options.Paladin[1].CDS = CreateFrame("EditBox", "vars.options.Paladin[1].CDS", vars.options.Paladin[1].frame, "InputBoxTemplate")
-			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -330, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
+			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -340, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
 		end
 	end
 	local function distanceBetweenUs(unit1, unit2)
@@ -964,7 +945,7 @@ local function classPriorities()
 	vars.renderCDs = function()		
 		local left, bottom, width, height = CompactRaidFrameContainer:GetRect()
 		local ih = vars.prioritySpellIcon.frame:GetWidth()
-		vars.menuButton:SetPoint("BOTTOMLEFT", left+20, bottom + height + ih -20)
+		vars.menuButton:SetPoint("BOTTOMLEFT", left + 30, bottom + height + 5)
 		for i = 1,#vars.cds do
 			if vars.cds[i].spellName ~= "" then
 				local cd = spellCD(vars.cds[i].spellName)
