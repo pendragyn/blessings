@@ -18,7 +18,20 @@ local function classPriorities()
 	vars.aoeCount1 = 0
 	vars.playerMaxHealth = UnitHealthMax("player")
 	vars.cds = {}
-	
+	vars.menuButton = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
+	vars.menuButton:SetPoint("BOTTOMLEFT", 0, 0)
+	vars.menuButton:SetWidth(20)
+	vars.menuButton:SetHeight(20) 
+	vars.menuButton:SetText("?")
+	vars.menuButton:SetScript("OnClick", function(self, button, down)
+		local c = UnitClass("player")
+		local s = GetSpecialization()
+		if vars.options[c] ~= nil then
+			if vars.options[c][s] ~= nil then
+				vars.options[c][s].frame:Show()
+			end
+		end
+	end)
 	vars.buildLines = function(args)
 		args.var = args.frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
 		args.var:SetText(args.text)
@@ -951,6 +964,7 @@ local function classPriorities()
 	vars.renderCDs = function()		
 		local left, bottom, width, height = CompactRaidFrameContainer:GetRect()
 		local ih = vars.prioritySpellIcon.frame:GetWidth()
+		vars.menuButton:SetPoint("BOTTOMLEFT", left+20, bottom + height + ih -20)
 		for i = 1,#vars.cds do
 			if vars.cds[i].spellName ~= "" then
 				local cd = spellCD(vars.cds[i].spellName)
@@ -1047,21 +1061,6 @@ local function classPriorities()
 				end)			
 				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
 					GameTooltip:Hide()
-				end)			
-				vars.cds[i].frame:SetScript("OnMouseDown", function(self, button)
-					if button == "RightButton" then
-						local c = UnitClass("player")
-						local s = GetSpecialization()
-						if vars.options[c] ~= nil then
-							if vars.options[c][s] ~= nil then
-								if vars.options[c][s].frame:IsShown() then
-									vars.options[c][s].frame:Hide()
-								else
-									vars.options[c][s].frame:Show()
-								end
-							end
-						end
-					end
 				end)
 			end
 			vars.cds[i].spellName = tmpSpellName
