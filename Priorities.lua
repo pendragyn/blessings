@@ -831,7 +831,7 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
-		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCharges("Sheilun's Gift") > 3 and spellCharges("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
+		if spellCD("Sheilun's Gift") <= vars.timeToAct and GetSpellCount("Sheilun's Gift") > 3 and GetSpellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
 			vars.priority.spell = "Sheilun's Gift"
 		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
@@ -904,6 +904,7 @@ local function classPriorities()
 		end
 	end
 	function main()
+		
 		-- vars.raidframes are unitframes
 		-- vars.raidframes.unit is the raidID
 		if castTimeLeft() > GCDtimeLeft() then
@@ -953,7 +954,12 @@ local function classPriorities()
 		for i = 1,#vars.cds do
 			if vars.cds[i].spellName ~= "" then
 				local cd = spellCD(vars.cds[i].spellName)
-				local charges = spellCharges(vars.cds[i].spellName)
+				local charges = 0
+				if vars.cds[i].spellName == "Sheilun's Gift" then
+					charges = GetSpellCount(vars.cds[i].spellName)
+				else
+					charges = spellCharges(vars.cds[i].spellName)
+				end
 				local float = 0
 				if cd <= 20 then
 					float = (width-50)*(1-cd/20)
