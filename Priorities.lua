@@ -833,9 +833,11 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
-		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCount("Sheilun's Gift") > 3 and spellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
-			vars.priority.spell = "Sheilun's Gift"
-		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
+		print(spellCD("Sheilun's Gift"),spellCount("Sheilun's Gift"),vars.playerMaxHealth)
+		-- if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCount("Sheilun's Gift") > 3 and spellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
+			-- vars.priority.spell = "Sheilun's Gift"
+		-- else
+		if spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
 		elseif spellCD("Essence Font") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Monk[2].lines[2].aoeCount:GetNumber() and not vars.isMoving("player") and auraDuration("player","Thunder Focus Tea","HELPFUL") == 0 and vars.aoeCount2 <= vars.options.Monk[2].lines[2].buffCount:GetNumber() then
 			vars.priority.spell = "Essence Font"
@@ -1001,64 +1003,67 @@ local function classPriorities()
 	end
 	function parseSpellCDs(cds)
 		local name, rank, icon, castingTime, minRange, maxRange, spellID, tmpSpellName
-		for i = 1, #cds do
-			tmpSpellName = cds[i]
-			if string.sub(tmpSpellName, 1, 11) == "Talent Row " then
-				local row = string.sub(tmpSpellName, 12, 12)
-				for h = 1,3 do
-					local talentID, name, texture, selected, available, spellID, tier, row, column = GetTalentInfo(row, h, 1)
-					if selected then
-						if GetSpellInfo(name) == nil then
-							tmpSpellName = ""
-						else
-							tmpSpellName = name
+		print(cds)
+		if cds ~= nil then
+			for i = 1, #cds do
+				tmpSpellName = cds[i]
+				if string.sub(tmpSpellName, 1, 11) == "Talent Row " then
+					local row = string.sub(tmpSpellName, 12, 12)
+					for h = 1,3 do
+						local talentID, name, texture, selected, available, spellID, tier, row, column = GetTalentInfo(row, h, 1)
+						if selected then
+							if GetSpellInfo(name) == nil then
+								tmpSpellName = ""
+							else
+								tmpSpellName = name
+							end
 						end
 					end
 				end
-			end
-			if vars.cds[i] == nil then
-				vars.cds[i] = {}
-				vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
-				vars.cds[i].frame:SetFrameStrata("HIGH")
-				vars.cds[i].frame:SetWidth(24)
-				vars.cds[i].frame:SetHeight(24)
-				vars.cds[i].texture = vars.cds[i].frame:CreateTexture(nil,"OVERLAY ")
-				vars.cds[i].texture:SetAllPoints(vars.cds[i].frame)	
-				vars.cds[i].frame.texture = vars.cds[i].texture
-				vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
-				vars.cds[i].frame:Hide()
-				vars.cds[i].frame:SetFrameLevel(30-i)
-				vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
-				vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
-				vars.cds[i].cd:SetText("")
-				vars.cds[i].cd:SetPoint("CENTER", 0,0)
-				vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
-				vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
-				vars.cds[i].charges = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
-				vars.cds[i].charges:SetText("")
-				vars.cds[i].charges:SetPoint("BOTTOMRIGHT", 0,2)
-				vars.cds[i].charges:SetTextColor(1.0,1.0,1.0,0.8)
-				vars.cds[i].charges:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE")
+				if vars.cds[i] == nil then
+					vars.cds[i] = {}
+					vars.cds[i].frame = CreateFrame("Frame", "vars.cds["..i.."]", UIParent)
+					vars.cds[i].frame:SetFrameStrata("HIGH")
+					vars.cds[i].frame:SetWidth(24)
+					vars.cds[i].frame:SetHeight(24)
+					vars.cds[i].texture = vars.cds[i].frame:CreateTexture(nil,"OVERLAY ")
+					vars.cds[i].texture:SetAllPoints(vars.cds[i].frame)	
+					vars.cds[i].frame.texture = vars.cds[i].texture
+					vars.cds[i].frame:SetPoint("BOTTOMLEFT", 0, 0)
+					vars.cds[i].frame:Hide()
+					vars.cds[i].frame:SetFrameLevel(30-i)
+					vars.cds[i].texture:SetTexture(GetSpellTexture(spellID))
+					vars.cds[i].cd = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+					vars.cds[i].cd:SetText("")
+					vars.cds[i].cd:SetPoint("CENTER", 0,0)
+					vars.cds[i].cd:SetTextColor(1.0,1.0,1.0,0.8)
+					vars.cds[i].cd:SetFont("Fonts\\FRIZQT__.TTF", 24, "THICKOUTLINE")
+					vars.cds[i].charges = vars.cds[i].frame:CreateFontString(nil, "TOOLTIP", "GameTooltipText")
+					vars.cds[i].charges:SetText("")
+					vars.cds[i].charges:SetPoint("BOTTOMRIGHT", 0,2)
+					vars.cds[i].charges:SetTextColor(1.0,1.0,1.0,0.8)
+					vars.cds[i].charges:SetFont("Fonts\\FRIZQT__.TTF", 12, "THICKOUTLINE")
+					vars.cds[i].frame.spellID = 0
+					vars.cds[i].frame:SetScript("OnEnter", function(self, motion)
+									GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+									GameTooltip:SetSpellByID(self.spellID)
+									GameTooltip:Show()
+								end)			
+					vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
+						GameTooltip:Hide()
+					end)			
+					vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
+						GameTooltip:Hide()
+					end)
+				end
+				vars.cds[i].spellName = tmpSpellName
+				name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(tmpSpellName)
+				vars.cds[i].frame.spellID = spellID
+			end		
+			for i = #cds + 1, #vars.cds do
+				vars.cds[i].spellName = ""
 				vars.cds[i].frame.spellID = 0
-				vars.cds[i].frame:SetScript("OnEnter", function(self, motion)
-								GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-								GameTooltip:SetSpellByID(self.spellID)
-								GameTooltip:Show()
-							end)			
-				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
-					GameTooltip:Hide()
-				end)			
-				vars.cds[i].frame:SetScript("OnLeave", function(self, motion)
-					GameTooltip:Hide()
-				end)
 			end
-			vars.cds[i].spellName = tmpSpellName
-			name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(tmpSpellName)
-			vars.cds[i].frame.spellID = spellID
-		end		
-		for i = #cds + 1, #vars.cds do
-			vars.cds[i].spellName = ""
-			vars.cds[i].frame.spellID = 0
 		end
 	end
 	function setupSpec()
