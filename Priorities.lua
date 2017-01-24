@@ -595,7 +595,15 @@ local function classPriorities()
 		end
 		--print(durationc,result)
 		return result
-	end		
+	end
+	local spellCount = function(spellName)
+		local result = 0
+		result = GetSpellCount(spellName)
+		if result == nil then
+			result = 0
+		end
+		return result
+	end
 	local spellCD = function(spellName)
 		local result = 999
 		local count = 0 --GetSpellCharges(spellName)
@@ -825,7 +833,7 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
-		if spellCD("Sheilun's Gift") <= vars.timeToAct and GetSpellCount("Sheilun's Gift") > 3 and GetSpellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
+		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCount("Sheilun's Gift") > 3 and spellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
 			vars.priority.spell = "Sheilun's Gift"
 		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
@@ -951,7 +959,7 @@ local function classPriorities()
 				local cd = spellCD(vars.cds[i].spellName)
 				local charges = 0
 				if vars.cds[i].spellName == "Sheilun's Gift" then
-					charges = GetSpellCount(vars.cds[i].spellName)
+					charges = spellCount(vars.cds[i].spellName)
 				else
 					charges = spellCharges(vars.cds[i].spellName)
 				end
