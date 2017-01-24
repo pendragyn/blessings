@@ -772,6 +772,7 @@ local function classPriorities()
 					vars.priority.maxHealth = maxHealth
 					vars.priority.healthInc = healthInc
 					vars.priority.healthPercentInc = healthPercentInc
+					vars.priority.missingHealthInc = missingHealthInc
 					vars.priority.unitID = testUnitID
 				end
 				--
@@ -833,11 +834,9 @@ local function classPriorities()
 		end
 	end
 	function monkHealToUse()
-		print(spellCD("Sheilun's Gift"),spellCount("Sheilun's Gift"),vars.playerMaxHealth)
-		-- if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCount("Sheilun's Gift") > 3 and spellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
-			-- vars.priority.spell = "Sheilun's Gift"
-		-- else
-		if spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
+		if spellCD("Sheilun's Gift") <= vars.timeToAct and spellCount("Sheilun's Gift") > 3 and spellCount("Sheilun's Gift")*vars.playerMaxHealth/25 < vars.priority.missingHealthInc then
+			vars.priority.spell = "Sheilun's Gift"
+		elseif spellCD("Life Cocoon") <= vars.timeToAct and vars.priority.healthPercentInc < vars.options.Monk[2].lines[1].healthPerc:GetNumber()/100 then
 			vars.priority.spell = "Life Cocoon"
 		elseif spellCD("Essence Font") <= vars.timeToAct and vars.aoeCount1 >= vars.options.Monk[2].lines[2].aoeCount:GetNumber() and not vars.isMoving("player") and auraDuration("player","Thunder Focus Tea","HELPFUL") == 0 and vars.aoeCount2 <= vars.options.Monk[2].lines[2].buffCount:GetNumber() then
 			vars.priority.spell = "Essence Font"
