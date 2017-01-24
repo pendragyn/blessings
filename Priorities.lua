@@ -1002,7 +1002,7 @@ local function classPriorities()
 	end
 	function parseSpellCDs(cds)
 		local name, rank, icon, castingTime, minRange, maxRange, spellID, tmpSpellName
-		print(cds)
+		--print(cds)
 		if cds ~= nil then
 			for i = 1, #cds do
 				tmpSpellName = cds[i]
