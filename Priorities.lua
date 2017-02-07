@@ -907,49 +907,50 @@ local function classPriorities()
 		end
 	end
 	function main()
-		
-		-- vars.raidframes are unitframes
-		-- vars.raidframes.unit is the raidID
-		if castTimeLeft() > GCDtimeLeft() then
-			vars.timeToAct = castTimeLeft()
-		else
-			vars.timeToAct = GCDtimeLeft()
+		if not UnitIsDeadOrGhost("player") then
+			-- vars.raidframes are unitframes
+			-- vars.raidframes.unit is the raidID
+			if castTimeLeft() > GCDtimeLeft() then
+				vars.timeToAct = castTimeLeft()
+			else
+				vars.timeToAct = GCDtimeLeft()
+			end
+			
+			vars.playerMaxHealth = UnitHealthMax("player")
+			vars.playerHealth = UnitHealth("player")
+			vars.playerHealthPercent = vars.playerHealth/vars.playerMaxHealth
+			vars.baseMana = UnitPowerMax("player", UnitPowerType("player"))/5
+			vars.playerMana = UnitPower("player", UnitPowerType("player"))
+			vars.haste = 1 + GetHaste()/100
+			vars.GCD = 1.5/(vars.haste)
+			if vars.GCD < .75 then
+				vars.GCD = .75
+			end
+			
+			memberToHeal()	
+			
+			healToUse()
+			if vars.priority.raidFrame ~= nil then
+				--print(vars.priority.raidFrame:GetName())
+				local left, bottom, width, height = vars.priority.raidFrame:GetRect()
+				local ih = height*.6
+				-- if vars.priority.raidFrame == vars.cds[1].frame then
+					-- ih = 50
+					-- vars.prioritySpellIcon.frame:SetWidth(ih)
+					-- vars.prioritySpellIcon.frame:SetHeight(ih)
+					-- vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left-ih*2, bottom)
+				-- else
+					vars.prioritySpellIcon.frame:SetWidth(ih)
+					vars.prioritySpellIcon.frame:SetHeight(ih)
+					vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + height*.2)
+				--end
+			else
+				--print(vars.priority.raidFrame)
+			end
+			local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.priority.spell)
+			vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
+			vars.renderCDs()
 		end
-		
-		vars.playerMaxHealth = UnitHealthMax("player")
-		vars.playerHealth = UnitHealth("player")
-		vars.playerHealthPercent = vars.playerHealth/vars.playerMaxHealth
-		vars.baseMana = UnitPowerMax("player", UnitPowerType("player"))/5
-		vars.playerMana = UnitPower("player", UnitPowerType("player"))
-		vars.haste = 1 + GetHaste()/100
-		vars.GCD = 1.5/(vars.haste)
-		if vars.GCD < .75 then
-			vars.GCD = .75
-		end
-		
-		memberToHeal()	
-		
-		healToUse()
-		if vars.priority.raidFrame ~= nil then
-			--print(vars.priority.raidFrame:GetName())
-			local left, bottom, width, height = vars.priority.raidFrame:GetRect()
-			local ih = height*.6
-			-- if vars.priority.raidFrame == vars.cds[1].frame then
-				-- ih = 50
-				-- vars.prioritySpellIcon.frame:SetWidth(ih)
-				-- vars.prioritySpellIcon.frame:SetHeight(ih)
-				-- vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left-ih*2, bottom)
-			-- else
-				vars.prioritySpellIcon.frame:SetWidth(ih)
-				vars.prioritySpellIcon.frame:SetHeight(ih)
-				vars.prioritySpellIcon.frame:SetPoint("BOTTOMLEFT", left + width/2 - ih/2, bottom + height*.2)
-			--end
-		else
-			--print(vars.priority.raidFrame)
-		end
-		local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(vars.priority.spell)
-		vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
-		vars.renderCDs()
 	end
 	vars.renderCDs = function()		
 		local left, bottom, width, height = CompactRaidFrameContainer:GetRect()
