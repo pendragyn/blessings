@@ -1,0 +1,8 @@
+## Interface: 70100
+## Title: blessings
+## Version: 1.0.0
+## Notes: Show my statuses
+## Author: blessings
+## SavedVariablesPerCharacter: blessingsDB
+blessings.xml
+blessings.lua
