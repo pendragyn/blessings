@@ -67,6 +67,17 @@ local function classPriorities()
 			self.savetable[self.savevar] = self:GetNumber()
 		end)
 	end
+	vars.buildCheckBoxes = function(args)
+		local chk
+		chk = CreateFrame("CheckButton", args.name.."_GlobalName", args.parent, "ChatConfigCheckButtonTemplate")
+		chk:SetPoint("TOPLEFT", args.left, args.top)
+		chk:SetWidth(20) 
+		chk:SetHeight(20) 
+		chk:SetAlpha(1.0)
+		chk:SetChecked(false)
+		 _G[chk:GetName().."Text"]:SetText(args.label)
+		 return chk
+	end
 	vars.buildCDfield = function(args)
 		local cdstring = ""
 		for i = 1,#args.defaultval do
@@ -115,7 +126,12 @@ local function classPriorities()
 	vars.prioritySpellIcon.frame:Show()
 	vars.prioritySpellIcon.frame:SetFrameLevel(7)
 	vars.prioritySpellIcon.texture:SetTexture(GetSpellTexture(spellID))
-		
+			
+	vars.chkBlessings = vars.buildCheckBoxes({var = vars.chkBlessings, left = 10, top = 0, label = "Blessing Checker", parent = UIParent, name = "vars.chkBlessings"})
+	
+	vars.chkBlessings:SetScript("OnClick", function(self, button, down)		
+		PrioritiesDB.blessings = self:GetChecked()
+	end)
 	vars.options = {}
 	
 	vars.buildOptions = {}
@@ -138,6 +154,8 @@ local function classPriorities()
 			vars.options.Monk[2] = {}
 			vars.buildFrames({var = vars.options.Monk[2], width = 1000, height = 400})
 			
+			vars.chkBlessings:SetParent(vars.options.Monk[2].frame)
+			vars.chkBlessings:SetPoint("TOPLEFT", 10, 0)
 			if PrioritiesDB.Monk[2].lines == nil then
 				PrioritiesDB.Monk[2].lines = {}				
 			end			
@@ -310,7 +328,8 @@ local function classPriorities()
 			--Paladin holy options
 			vars.options.Paladin[1] = {}
 			vars.buildFrames({var = vars.options.Paladin[1], width = 1000, height = 370})
-			
+			vars.chkBlessings:SetParent(vars.options.Paladin[1].frame)
+			vars.chkBlessings:SetPoint("TOPLEFT", 10, 0)
 			if PrioritiesDB.Paladin[1].lines == nil then
 				PrioritiesDB.Paladin[1].lines = {}				
 			end			
@@ -485,6 +504,100 @@ local function classPriorities()
 								
 			vars.options.Paladin[1].CDS = CreateFrame("EditBox", "vars.options.Paladin[1].CDS", vars.options.Paladin[1].frame, "InputBoxTemplate")
 			vars.buildCDfield({var = vars.options.Paladin[1].CDS, frame = vars.options.Paladin[1].frame, width = 980, height = 13, step = 5, minval = 0, maxval = 100, defaultval = PrioritiesDB.Paladin[1].CDS, top = -340, left = 10, savetable = PrioritiesDB.Paladin[1], savevar = "CDS"})
+		end
+	end	
+	local function getActionUnitID(gtype,nbr)
+		local result
+		if gtype == "raid" then
+			result = gtype .. nbr
+		else
+			if nbr == 1 then
+				result = "player"
+			else
+				result = gtype .. (nbr-1)
+			end
+		end
+		return result
+	end
+	local function blessings()
+		if vars.chkBlessings:GetChecked() then
+			local groupCount = GetNumGroupMembers()
+			local testUnitID
+			local blesserCount = 0
+			local chatType = "PARTY"
+			if groupCount == 0 then
+				groupCount = 1
+			end
+			if groupCount > 40 then
+				groupCount = 40
+			end
+			if IsInRaid() then
+				groupType = "raid"
+			else
+				groupType = "party"
+			end		
+			if IsInGroup() then
+				if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+					chatType = 'INSTANCE_CHAT'
+				elseif IsInRaid() then
+					chatType = 'RAID'
+				else	
+					chatType = 'PARTY'
+				end
+			else
+				chatType = 'SAY'  -- for testing purposes
+			end
+			print(chatType)
+			vars.blessers = {}
+			for i = 1, groupCount do
+				local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i)
+				testUnitID = getActionUnitID(groupType, i)	
+				role = UnitGroupRolesAssigned(testUnitID)
+				print(testUnitID, class, role)
+				if class == "Paladin" and role == "DAMAGER" then
+					vars.blessers[testUnitID] = {}
+					vars.blessers[testUnitID].wisdom = false
+					vars.blessers[testUnitID].kings = false
+				end
+			end
+			local b = 0
+			for i = 1, groupCount do
+				local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
+				testUnitID = getActionUnitID(groupType, i)	
+				role = UnitGroupRolesAssigned(testUnitID)
+				name = "x"
+				b = 0
+				while name ~= nil do
+					b = b + 1
+					name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitAura(testUnitID, b, "HELPFUL")
+					if name == "Greater Blessing of Wisdom" then
+						--print(name, caster)
+						if vars.blessers[caster] == nil then
+							vars.blessers[caster] = {}
+							vars.blessers[caster].kings = false
+						end
+						vars.blessers[caster].wisdom = true
+					elseif name == "Greater Blessing of Kings" then
+						if vars.blessers[caster] == nil then
+							vars.blessers[caster] = {}
+							vars.blessers[caster].wisdom = false
+						end
+						vars.blessers[caster].kings = true
+					end
+				end
+			end
+			for k,v in pairs(vars.blessers) do
+				if vars.blessers ~= nil then
+					if not v.wisdom then
+						print(UnitName(k).." has an unused Greater Blessing of Wisdom")
+						SendChatMessage(UnitName(k).." has an available Greater Blessing of Wisdom", chatType)
+					end	
+					if not v.kings then
+						print(UnitName(k).." has an unused Greater Blessing of Kings")
+						SendChatMessage(UnitName(k).." has an available Greater Blessing of Kings", chatType)
+					end
+				end
+			end
 		end
 	end
 	local function distanceBetweenUs(unit1, unit2)
@@ -1082,6 +1195,16 @@ local function classPriorities()
 			PrioritiesDB[vars.class][vars.spec] = {}
 		end
 		buildCDs()
+		if PrioritiesDB.blessings ~= nil then
+			if vars.chkBlessings ~= nil then
+				vars.chkBlessings:SetChecked(PrioritiesDB.blessings)
+			end
+		else
+			PrioritiesDB.blessings = true
+			if vars.chkBlessings ~= nil then
+				vars.chkBlessings:SetChecked(PrioritiesDB.blessings)
+			end
+		end
 	end
 	function buildCDs()
 		for i = 1,#vars.cds do
@@ -1103,6 +1226,9 @@ local function classPriorities()
 			end
 		end		
 		parseSpellCDs(PrioritiesDB[vars.class][vars.spec].CDS)
+	end
+	function e:READY_CHECK(...)
+		blessings()
 	end
 	function e:UNIT_SPELLCAST_SUCCEEDED(...)
 		local unitID, spellName, rank, lineID, spellID = ...
