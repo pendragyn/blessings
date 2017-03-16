@@ -68,17 +68,13 @@ local function classblessings()
 				name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitAura(testUnitID, b, "HELPFUL")
 				if name == "Greater Blessing of Wisdom" then
 					--print(name, caster)
-					if vars.blessers[caster] == nil then
-						vars.blessers[caster] = {}
-						vars.blessers[caster].kings = false
+					if vars.blessers[caster] ~= nil then
+						vars.blessers[caster].wisdom = true
 					end
-					vars.blessers[caster].wisdom = true
 				elseif name == "Greater Blessing of Kings" then
-					if vars.blessers[caster] == nil then
-						vars.blessers[caster] = {}
-						vars.blessers[caster].wisdom = false
+					if vars.blessers[caster] ~= nil then
+						vars.blessers[caster].kings = true
 					end
-					vars.blessers[caster].kings = true
 				end
 			end
 		end
